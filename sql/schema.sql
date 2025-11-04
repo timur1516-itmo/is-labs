@@ -9,7 +9,8 @@ CREATE TABLE person
                                     nationality IS NULL),
     location_x  FLOAT            NOT NULL,
     location_y  DOUBLE PRECISION NOT NULL,
-    location_z  DOUBLE PRECISION NOT NULL
+    location_z  DOUBLE PRECISION NOT NULL,
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE movie
@@ -30,5 +31,6 @@ CREATE TABLE movie
     golden_palm_count INTEGER          NOT NULL CHECK (golden_palm_count > 0),
     usa_box_office    INTEGER          NOT NULL CHECK (usa_box_office > 0),
     tagline           VARCHAR(255)     NOT NULL,
-    genre             VARCHAR(255) CHECK (genre IN ('DRAMA', 'MUSICAL', 'TRAGEDY') OR genre IS NULL)
+    genre             VARCHAR(255) CHECK (genre IN ('DRAMA', 'MUSICAL', 'TRAGEDY') OR genre IS NULL),
+    version BIGINT NOT NULL DEFAULT 0
 );

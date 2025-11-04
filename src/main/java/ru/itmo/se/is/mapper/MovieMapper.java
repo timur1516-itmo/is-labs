@@ -21,6 +21,7 @@ public abstract class MovieMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "director", source = "directorId")
     @Mapping(target = "screenwriter", source = "screenwriterId")
     @Mapping(target = "operator", source = "operatorId")
@@ -28,6 +29,7 @@ public abstract class MovieMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "director", source = "directorId")
     @Mapping(target = "screenwriter", source = "screenwriterId")
     @Mapping(target = "operator", source = "operatorId")

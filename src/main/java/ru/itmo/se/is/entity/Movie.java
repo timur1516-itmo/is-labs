@@ -29,6 +29,7 @@ public class Movie {
     private int usaBoxOffice;
     private String tagline;
     private MovieGenre genre;
+    private Long version;
 
     @Override
     public boolean equals(Object o) {

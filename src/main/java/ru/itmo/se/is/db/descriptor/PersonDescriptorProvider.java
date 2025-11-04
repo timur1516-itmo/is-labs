@@ -4,6 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
@@ -73,6 +75,16 @@ public class PersonDescriptorProvider {
         nationalityMapping.setConverter(natConv);
         descriptor.addMapping(nationalityMapping);
 
+        DirectToFieldMapping versionMapping = new DirectToFieldMapping();
+        versionMapping.setAttributeName("version");
+        versionMapping.setFieldName("version");
+        descriptor.addMapping(versionMapping);
+
+        DatabaseField versionField = new DatabaseField("version");
+        VersionLockingPolicy lockingPolicy = new VersionLockingPolicy(versionField);
+        lockingPolicy.storeInObject();
+        lockingPolicy.setIsCascaded(false);
+        descriptor.setOptimisticLockingPolicy(lockingPolicy);
         return descriptor;
     }
 }

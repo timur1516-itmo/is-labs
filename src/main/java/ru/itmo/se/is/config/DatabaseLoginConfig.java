@@ -29,6 +29,7 @@ public class DatabaseLoginConfig {
             login.setPlatform(new PostgreSQLPlatform());
             login.setDefaultSequence(new NativeSequence());
             login.shouldUseNativeSequencing();
+            login.setUsesExternalTransactionController(true);
             login.setConnector(connector);
 
             return login;

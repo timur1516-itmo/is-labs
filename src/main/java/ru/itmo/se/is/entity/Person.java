@@ -19,6 +19,7 @@ public class Person {
     private Location location;
     private float weight;
     private Country nationality;
+    private Long version;
 
     @Override
     public boolean equals(Object o) {

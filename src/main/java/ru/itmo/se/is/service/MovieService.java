@@ -2,6 +2,7 @@ package ru.itmo.se.is.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import ru.itmo.se.is.dto.movie.*;
 import ru.itmo.se.is.dto.person.PersonResponseDto;
 import ru.itmo.se.is.entity.Movie;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Transactional
 @ApplicationScoped
 public class MovieService {
 

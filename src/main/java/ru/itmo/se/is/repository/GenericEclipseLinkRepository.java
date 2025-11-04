@@ -37,27 +37,23 @@ public abstract class GenericEclipseLinkRepository<T, ID> implements Repository<
 
     @Override
     public T save(T entity) {
-        UnitOfWork uow = session.acquireUnitOfWork();
-        T managed = (T) uow.deepMergeClone(entity);
-        uow.commit();
-        return managed;
+        session.insertObject(entity);
+        return entity;
     }
 
     public void update(T entity, Consumer<T> fieldUpdater) {
-        UnitOfWork uow = session.acquireUnitOfWork();
+        UnitOfWork uow = session.getActiveUnitOfWork();
         T managed = (T) uow.deepMergeClone(entity);
         fieldUpdater.accept(managed);
         registerNestedFields(uow, managed);
-        uow.commit();
     }
 
     @Override
     public void deleteById(ID id) {
-        UnitOfWork uow = session.acquireUnitOfWork();
+        UnitOfWork uow = session.getActiveUnitOfWork();
         DeleteAllQuery query = new DeleteAllQuery(entityClass);
         query.setSelectionCriteria(new ExpressionBuilder().get("id").equal(id));
         uow.executeQuery(query);
-        uow.commit();
     }
 
     protected abstract void registerNestedFields(UnitOfWork uow, T entity);

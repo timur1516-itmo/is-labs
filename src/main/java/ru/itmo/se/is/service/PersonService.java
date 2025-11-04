@@ -2,6 +2,7 @@ package ru.itmo.se.is.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import ru.itmo.se.is.dto.person.PersonLazyBeanParamDto;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Transactional
 @ApplicationScoped
 public class PersonService {
     @Inject
