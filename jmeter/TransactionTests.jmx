@@ -19,7 +19,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults">
         <stringProp name="HTTPSampler.domain">localhost</stringProp>
         <stringProp name="HTTPSampler.port">8080</stringProp>
         <stringProp name="HTTPSampler.protocol">http</stringProp>
@@ -43,18 +43,39 @@
         </collectionProp>
       </HeaderManager>
       <hashTree/>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
-        <intProp name="ThreadGroup.num_threads">1</intProp>
-        <intProp name="ThreadGroup.ramp_time">1</intProp>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="User">
+        <intProp name="ThreadGroup.num_threads">2</intProp>
+        <intProp name="ThreadGroup.ramp_time">0</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
           <stringProp name="LoopController.loops">1</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
-      </SetupThreadGroup>
+      </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PersonSetup">
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="config">
+          <stringProp name="delimiter">,</stringProp>
+          <stringProp name="fileEncoding"></stringProp>
+          <stringProp name="filename">/home/timur1516/documents/dev/intellij/is-labs/jmeter/config.csv</stringProp>
+          <boolProp name="ignoreFirstLine">false</boolProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="variableNames">filename</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Variable">
+          <stringProp name="variableName">randomVar</stringProp>
+          <stringProp name="outputFormat"></stringProp>
+          <stringProp name="minimumValue">1</stringProp>
+          <stringProp name="maximumValue">10000</stringProp>
+          <stringProp name="randomSeed"></stringProp>
+          <boolProp name="perThread">false</boolProp>
+        </RandomVariableConfig>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create random person">
           <stringProp name="HTTPSampler.path">${BASE_PATH}/people</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -65,7 +86,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;name&quot;: &quot;George Lucas&quot;,&#xd;
+  &quot;name&quot;: &quot;RANDOM_PERSON_${randomVar}&quot;,&#xd;
   &quot;eyeColor&quot;: &quot;BROWN&quot;,&#xd;
   &quot;hairColor&quot;: &quot;BROWN&quot;,&#xd;
   &quot;location&quot;: {&#xd;
@@ -82,24 +103,14 @@
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">personId</stringProp>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Person id extractor">
+            <stringProp name="JSONPostProcessor.referenceNames">randomPersonId</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
-            <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
           </JSONPostProcessor>
           <hashTree/>
-          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="script">def personId = vars.get(&quot;personId&quot;)
-props.put(&quot;personId&quot;, personId)</stringProp>
-            <stringProp name="scriptLanguage">groovy</stringProp>
-          </JSR223PostProcessor>
-          <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="MovieSetup">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create random movie" enabled="true">
           <stringProp name="HTTPSampler.path">${BASE_PATH}/movies</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -110,21 +121,21 @@ props.put(&quot;personId&quot;, personId)</stringProp>
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;name&quot;: &quot;Звёздные войны&quot;,&#xd;
+  &quot;name&quot;: &quot;RANDOM_MOVIE_${randomVar}&quot;,&#xd;
   &quot;oscarsCount&quot;: 6,&#xd;
   &quot;budget&quot;: 11000000,&#xd;
   &quot;totalBoxOffice&quot;: 775398007,&#xd;
   &quot;mpaaRating&quot;: &quot;PG_13&quot;,&#xd;
   &quot;directorReference&quot;: {&#xd;
-  	&quot;id&quot;: ${personId},&#xd;
+  	&quot;id&quot;: ${randomPersonId},&#xd;
   	&quot;value&quot;: null&#xd;
   },&#xd;
   &quot;screenwriterReference&quot;: {&#xd;
-  	&quot;id&quot;: ${personId},&#xd;
+  	&quot;id&quot;: ${randomPersonId},&#xd;
   	&quot;value&quot;: null&#xd;
   },&#xd;
   &quot;operatorReference&quot;: {&#xd;
-  	&quot;id&quot;: ${personId},&#xd;
+  	&quot;id&quot;: ${randomPersonId},&#xd;
   	&quot;value&quot;: null&#xd;
   },&#xd;
   &quot;length&quot;: 121,&#xd;
@@ -143,37 +154,15 @@ props.put(&quot;personId&quot;, personId)</stringProp>
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor">
-            <stringProp name="JSONPostProcessor.referenceNames">movieId</stringProp>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Movie id extractor">
+            <stringProp name="JSONPostProcessor.referenceNames">randomMovieId</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
-            <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
           </JSONPostProcessor>
           <hashTree/>
-          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="script">def movieId = vars.get(&quot;movieId&quot;)
-props.put(&quot;movieId&quot;, movieId)</stringProp>
-            <stringProp name="scriptLanguage">groovy</stringProp>
-          </JSR223PostProcessor>
-          <hashTree/>
         </hashTree>
-      </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Concurrent update">
-        <intProp name="ThreadGroup.num_threads">10</intProp>
-        <intProp name="ThreadGroup.ramp_time">0</intProp>
-        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <stringProp name="LoopController.loops">1</stringProp>
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-        </elementProp>
-      </ThreadGroup>
-      <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request">
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/movies/${__property(movieId)}</stringProp>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Edit random person">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/people/${randomPersonId}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">PATCH</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -183,21 +172,49 @@ props.put(&quot;movieId&quot;, movieId)</stringProp>
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;name&quot;: &quot;Интерстеллар&quot;,&#xd;
+  &quot;name&quot;: &quot;RANDOM_PERSON_${randomVar}_updated&quot;,&#xd;
+  &quot;eyeColor&quot;: &quot;BROWN&quot;,&#xd;
+  &quot;hairColor&quot;: &quot;BROWN&quot;,&#xd;
+  &quot;location&quot;: {&#xd;
+    &quot;x&quot;: 12.5,&#xd;
+    &quot;y&quot;: 45.0,&#xd;
+    &quot;z&quot;: 3.14&#xd;
+  },&#xd;
+  &quot;weight&quot;: 82.5,&#xd;
+  &quot;nationality&quot;: &quot;FRANCE&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Edit random movie" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/movies/${randomMovieId}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;name&quot;: &quot;RANDOM_MOVIE_${randomVar}_updated&quot;,&#xd;
   &quot;oscarsCount&quot;: 6,&#xd;
   &quot;budget&quot;: 11000000,&#xd;
   &quot;totalBoxOffice&quot;: 775398007,&#xd;
   &quot;mpaaRating&quot;: &quot;PG_13&quot;,&#xd;
   &quot;directorReference&quot;: {&#xd;
-  	&quot;id&quot;: ${__property(personId)},&#xd;
+  	&quot;id&quot;: ${randomPersonId},&#xd;
   	&quot;value&quot;: null&#xd;
   },&#xd;
   &quot;screenwriterReference&quot;: {&#xd;
-  	&quot;id&quot;: ${__property(personId)},&#xd;
+  	&quot;id&quot;: ${randomPersonId},&#xd;
   	&quot;value&quot;: null&#xd;
   },&#xd;
   &quot;operatorReference&quot;: {&#xd;
-  	&quot;id&quot;: ${__property(personId)},&#xd;
+  	&quot;id&quot;: ${randomPersonId},&#xd;
   	&quot;value&quot;: null&#xd;
   },&#xd;
   &quot;length&quot;: 121,&#xd;
@@ -216,20 +233,188 @@ props.put(&quot;movieId&quot;, movieId)</stringProp>
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree/>
-      </hashTree>
-      <PostThreadGroup guiclass="PostThreadGroupGui" testclass="PostThreadGroup" testname="tearDown Thread Group">
-        <intProp name="ThreadGroup.num_threads">1</intProp>
-        <intProp name="ThreadGroup.ramp_time">1</intProp>
-        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <stringProp name="LoopController.loops">1</stringProp>
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-        </elementProp>
-      </PostThreadGroup>
-      <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="MovieClear">
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/movies/${__property(movieId)}</stringProp>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create same person">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/people</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;name&quot;: &quot;SAME_PERSON&quot;,&#xd;
+  &quot;eyeColor&quot;: &quot;BROWN&quot;,&#xd;
+  &quot;hairColor&quot;: &quot;BROWN&quot;,&#xd;
+  &quot;location&quot;: {&#xd;
+    &quot;x&quot;: 12.5,&#xd;
+    &quot;y&quot;: 45.0,&#xd;
+    &quot;z&quot;: 3.14&#xd;
+  },&#xd;
+  &quot;weight&quot;: 82.5,&#xd;
+  &quot;nationality&quot;: &quot;FRANCE&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get same person">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/people/?name=SAME_PERSON</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Person id extractor">
+            <stringProp name="JSONPostProcessor.referenceNames">samePersonId</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.data[0].id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create same movie" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/movies</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;name&quot;: &quot;SAME_MOVIE&quot;,&#xd;
+  &quot;oscarsCount&quot;: 6,&#xd;
+  &quot;budget&quot;: 11000000,&#xd;
+  &quot;totalBoxOffice&quot;: 775398007,&#xd;
+  &quot;mpaaRating&quot;: &quot;PG_13&quot;,&#xd;
+  &quot;directorReference&quot;: {&#xd;
+  	&quot;id&quot;: ${samePersonId},&#xd;
+  	&quot;value&quot;: null&#xd;
+  },&#xd;
+  &quot;screenwriterReference&quot;: {&#xd;
+  	&quot;id&quot;: ${samePersonId},&#xd;
+  	&quot;value&quot;: null&#xd;
+  },&#xd;
+  &quot;operatorReference&quot;: {&#xd;
+  	&quot;id&quot;: ${samePersonId},&#xd;
+  	&quot;value&quot;: null&#xd;
+  },&#xd;
+  &quot;length&quot;: 121,&#xd;
+  &quot;goldenPalmCount&quot;: 1,&#xd;
+  &quot;usaBoxOffice&quot;: 307263200,&#xd;
+  &quot;tagline&quot;: &quot;Давным-давно в далёкой-далёкой галактике...&quot;,&#xd;
+  &quot;genre&quot;: &quot;MUSICAL&quot;,&#xd;
+  &quot;coordinates&quot;: {&#xd;
+    &quot;x&quot;: 100.5,&#xd;
+    &quot;y&quot;: 200&#xd;
+  }&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get same movie" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/movies/?name=SAME_MOVIE</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Movie id extractor">
+            <stringProp name="JSONPostProcessor.referenceNames">sameMovieId</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.data[0].id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Edit same person" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/people/${samePersonId}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;name&quot;: &quot;SAME_PERSON updated&quot;,&#xd;
+  &quot;eyeColor&quot;: &quot;BROWN&quot;,&#xd;
+  &quot;hairColor&quot;: &quot;BROWN&quot;,&#xd;
+  &quot;location&quot;: {&#xd;
+    &quot;x&quot;: 12.5,&#xd;
+    &quot;y&quot;: 45.0,&#xd;
+    &quot;z&quot;: 3.14&#xd;
+  },&#xd;
+  &quot;weight&quot;: 82.5,&#xd;
+  &quot;nationality&quot;: &quot;FRANCE&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Edit same movie">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/movies/${sameMovieId}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;name&quot;: &quot;SAME_MOVIE updated&quot;,&#xd;
+  &quot;oscarsCount&quot;: 6,&#xd;
+  &quot;budget&quot;: 11000000,&#xd;
+  &quot;totalBoxOffice&quot;: 775398007,&#xd;
+  &quot;mpaaRating&quot;: &quot;PG_13&quot;,&#xd;
+  &quot;directorReference&quot;: {&#xd;
+  	&quot;id&quot;: ${samePersonId},&#xd;
+  	&quot;value&quot;: null&#xd;
+  },&#xd;
+  &quot;screenwriterReference&quot;: {&#xd;
+  	&quot;id&quot;: ${samePersonId},&#xd;
+  	&quot;value&quot;: null&#xd;
+  },&#xd;
+  &quot;operatorReference&quot;: {&#xd;
+  	&quot;id&quot;: ${samePersonId},&#xd;
+  	&quot;value&quot;: null&#xd;
+  },&#xd;
+  &quot;length&quot;: 121,&#xd;
+  &quot;goldenPalmCount&quot;: 1,&#xd;
+  &quot;usaBoxOffice&quot;: 307263200,&#xd;
+  &quot;tagline&quot;: &quot;Давным-давно в далёкой-далёкой галактике...&quot;,&#xd;
+  &quot;genre&quot;: &quot;MUSICAL&quot;,&#xd;
+  &quot;coordinates&quot;: {&#xd;
+    &quot;x&quot;: 100.5,&#xd;
+    &quot;y&quot;: 200&#xd;
+  }&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete random movie" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/movies/${randomMovieId}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -239,11 +424,75 @@ props.put(&quot;movieId&quot;, movieId)</stringProp>
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PersonClear">
-          <stringProp name="HTTPSampler.path">${BASE_PATH}/people/${__property(personId)}</stringProp>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete random person">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/people/${randomPersonId}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete same movie" enabled="true">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/movies/${sameMovieId}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">DELETE</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete same person">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/people/${samePersonId}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">DELETE</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Import different json">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/imports</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+            <collectionProp name="HTTPFileArgs.files">
+              <elementProp name="${filename}" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">application/json</stringProp>
+                <stringProp name="File.path">${filename}</stringProp>
+                <stringProp name="File.paramname">file</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Import same json">
+          <stringProp name="HTTPSampler.path">${BASE_PATH}/imports</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+            <collectionProp name="HTTPFileArgs.files">
+              <elementProp name="data/same.json" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">application/json</stringProp>
+                <stringProp name="File.path">data/same.json</stringProp>
+                <stringProp name="File.paramname">file</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
           <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
             <collectionProp name="Arguments.arguments"/>

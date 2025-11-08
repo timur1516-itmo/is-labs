@@ -3,11 +3,11 @@ package ru.itmo.se.is.repository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.queries.DeleteAllQuery;
-import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.Server;
+import ru.itmo.se.is.db.UnitOfWorkManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,18 +18,18 @@ import java.util.function.Consumer;
 @SuppressWarnings("unchecked")
 public abstract class GenericEclipseLinkRepository<T, ID> implements Repository<T, ID> {
 
-    private Class<T> entityClass;
-    private DatabaseSession session;
+    protected Class<T> entityClass;
+    protected UnitOfWorkManager unitOfWorkManager;
 
     @Override
     public List<T> findAll() {
-        UnitOfWork uow = session.getActiveUnitOfWork();
+        UnitOfWork uow = unitOfWorkManager.getCurrent();
         return (List<T>) uow.readAllObjects(entityClass);
     }
 
     @Override
     public Optional<T> findById(ID id) {
-        UnitOfWork uow = session.getActiveUnitOfWork();
+        UnitOfWork uow = unitOfWorkManager.getCurrent();
         ExpressionBuilder b = new ExpressionBuilder();
         T entity = (T) uow.readObject(
                 entityClass,
@@ -40,15 +40,14 @@ public abstract class GenericEclipseLinkRepository<T, ID> implements Repository<
 
     @Override
     public T save(T entity) {
-        UnitOfWork uow = session.getActiveUnitOfWork();
-        T managed = (T) uow.registerNewObject(entity);
-        registerNestedFields(uow, managed);
-        uow.writeChanges();
-        return managed;
+        UnitOfWork uow = unitOfWorkManager.getCurrent();
+        System.out.println("UOW in save: " + System.identityHashCode(uow));
+        if(uow == null) return null;
+        return (T) uow.registerObject(entity);
     }
 
     public void update(T entity, Consumer<T> fieldUpdater) {
-        UnitOfWork uow = session.getActiveUnitOfWork();
+        UnitOfWork uow = unitOfWorkManager.getCurrent();
         T managed = (T) uow.readObject(entity);
         fieldUpdater.accept(managed);
         registerNestedFields(uow, managed);
@@ -56,9 +55,12 @@ public abstract class GenericEclipseLinkRepository<T, ID> implements Repository<
 
     @Override
     public void deleteById(ID id) {
-        UnitOfWork uow = session.getActiveUnitOfWork();
+        UnitOfWork uow = unitOfWorkManager.getCurrent();
         findById(id).ifPresent(uow::deleteObject);
     }
 
-    protected abstract void registerNestedFields(UnitOfWork uow, T entity);
+    protected void registerNestedFields(UnitOfWork uow, T entity) {
+    }
+
+    ;
 }

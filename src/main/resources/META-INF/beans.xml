@@ -2,5 +2,7 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="https://jakarta.ee/xml/ns/jakartaee"
        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_1.xsd">
-
+    <interceptors>
+        <class>ru.itmo.se.is.db.MyTransactionalInterceptor</class>
+    </interceptors>
 </beans>

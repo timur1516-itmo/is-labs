@@ -1,5 +1,7 @@
 package ru.itmo.se.is.repository;
 
+import org.eclipse.persistence.sessions.UnitOfWork;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;

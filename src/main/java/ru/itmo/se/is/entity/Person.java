@@ -3,6 +3,7 @@ package ru.itmo.se.is.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import ru.itmo.se.is.entity.value.Color;
 import ru.itmo.se.is.entity.value.Country;
 
@@ -11,6 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class Person {
     private Long id;
     private String name;

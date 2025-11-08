@@ -4,11 +4,12 @@ import jakarta.transaction.RollbackException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
 
 @Provider
-public class RollBackExceptionMapper implements ExceptionMapper<RollbackException> {
+public class OptimisticLockExceptionMapper implements ExceptionMapper<OptimisticLockException> {
     @Override
-    public Response toResponse(RollbackException exception) {
+    public Response toResponse(OptimisticLockException exception) {
         ProblemDetail problemDetail = ProblemDetail.builder()
                 .title("Modification conflict")
                 .detail("Entity has already been modified by another user")

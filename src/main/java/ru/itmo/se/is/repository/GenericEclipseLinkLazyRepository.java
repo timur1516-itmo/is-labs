@@ -8,6 +8,8 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.Server;
+import ru.itmo.se.is.db.UnitOfWorkManager;
 
 import java.util.List;
 import java.util.Map;
@@ -16,12 +18,12 @@ import java.util.Map;
 @NoArgsConstructor
 public abstract class GenericEclipseLinkLazyRepository<T> implements LazyRepository<T> {
 
-    private Class<T> entityClass;
-    private DatabaseSession session;
+    protected Class<T> entityClass;
+    protected UnitOfWorkManager unitOfWorkManager;
 
     @Override
     public long count(Map<String, Object> filterBy) {
-        UnitOfWork uow = session.getActiveUnitOfWork();
+        UnitOfWork uow = unitOfWorkManager.getCurrent();
         ExpressionBuilder builder = new ExpressionBuilder();
 
         ReportQuery query = new ReportQuery(entityClass, builder);
@@ -37,7 +39,7 @@ public abstract class GenericEclipseLinkLazyRepository<T> implements LazyReposit
     @Override
     @SuppressWarnings("unchecked")
     public List<T> load(int first, int pageSize, String sortField, int sortOrder, Map<String, Object> filterBy) {
-        UnitOfWork uow = session.getActiveUnitOfWork();
+        UnitOfWork uow = unitOfWorkManager.getCurrent();
         ExpressionBuilder builder = new ExpressionBuilder();
 
         ReadAllQuery query = new ReadAllQuery(entityClass);

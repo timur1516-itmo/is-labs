@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Inception",
+    "coordinates": {
+      "x": -737.5,
+      "y": 462
+    },
+    "oscarsCount": 4,
+    "budget": 160000000.0,
+    "totalBoxOffice": 836836807,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "John Doe",
+      "eyeColor": "GREEN",
+      "hairColor": "BROWN",
+      "weight": 70.5,
+      "nationality": "FRANCE",
+      "location": {
+        "x": 10.5,
+        "y": 20.7,
+        "z": 30.0
+      }
+    },
+    "screenwriter": {
+      "name": "Jane Smith",
+      "eyeColor": "YELLOW",
+      "hairColor": "YELLOW",
+      "weight": 65.0,
+      "nationality": "JAPAN",
+      "location": {
+        "x": 5.0,
+        "y": 15.5,
+        "z": 25.0
+      }
+    },
+    "operator": {
+      "name": "Alice Johnson",
+      "eyeColor": "BROWN",
+      "hairColor": "GREEN",
+      "weight": 72.3,
+      "nationality": "UNITED_KINGDOM",
+      "location": {
+        "x": 8.0,
+        "y": 18.2,
+        "z": 32.1
+      }
+    },
+    "length": 148,
+    "goldenPalmCount": 2,
+    "usaBoxOffice": 292576195,
+    "tagline": "A thief who steals corporate secrets...",
+    "genre": "DRAMA"
+  }
+]

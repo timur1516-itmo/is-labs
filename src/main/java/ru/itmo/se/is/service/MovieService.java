@@ -3,16 +3,23 @@ package ru.itmo.se.is.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import ru.itmo.se.is.dto.movie.*;
+import jakarta.validation.Valid;
+import ru.itmo.se.is.annotation.MyTransactional;
+import ru.itmo.se.is.dto.movie.MovieCountResponseDto;
+import ru.itmo.se.is.dto.movie.MovieLazyBeanParamDto;
+import ru.itmo.se.is.dto.movie.MovieLazyResponseDto;
+import ru.itmo.se.is.dto.movie.MovieRequestDto;
 import ru.itmo.se.is.dto.person.PersonResponseDto;
 import ru.itmo.se.is.entity.Movie;
 import ru.itmo.se.is.entity.Person;
 import ru.itmo.se.is.entity.value.MpaaRating;
+import ru.itmo.se.is.exception.BusinessUniqueConstraintException;
 import ru.itmo.se.is.exception.EntityNotFoundException;
 import ru.itmo.se.is.mapper.MovieMapper;
 import ru.itmo.se.is.mapper.PersonMapper;
 import ru.itmo.se.is.repository.EclipseLinkLazyMovieRepository;
-import ru.itmo.se.is.repository.Repository;
+import ru.itmo.se.is.repository.MovieRepository;
+import ru.itmo.se.is.repository.PersonRepository;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -20,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Transactional
+@MyTransactional
 @ApplicationScoped
 public class MovieService {
 
     @Inject
-    private Repository<Movie, Long> repository;
+    private MovieRepository movieRepository;
 
     @Inject
     private EclipseLinkLazyMovieRepository lazyRepository;
@@ -36,27 +43,55 @@ public class MovieService {
     @Inject
     private PersonMapper personMapper;
 
-    public MovieResponseDto create(MovieRequestDto dto) {
+    @Inject
+    private PersonService personService;
+
+    public Movie create(@Valid MovieRequestDto dto) {
         Movie movie = mapper.toMovie(dto);
+
+        if (dto.getDirectorReference().isNew()) {
+            movie.setDirector(personService.createOrGetExisting(dto.getDirectorReference().getValue()));
+        }
+        if (dto.getOperatorReference().isNew()) {
+            movie.setOperator(personService.createOrGetExisting(dto.getOperatorReference().getValue()));
+        }
+        if (dto.getScreenwriterReference().isNew()) {
+            movie.setScreenwriter(personService.createOrGetExisting(dto.getScreenwriterReference().getValue()));
+        }
+
         movie.setCreationDate(ZonedDateTime.now());
-        return mapper.toDto(
-                repository.save(
-                        movie
-                )
-        );
+
+        checkUniqueConstraint(movie);
+        Movie savedMovie = movieRepository.save(movie);
+
+        return savedMovie;
     }
 
-    public void update(long id, MovieRequestDto dto) {
-        Movie movie = repository.findById(id)
+    public void update(long id, @Valid MovieRequestDto dto) {
+        Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
-        repository.update(movie, (m) -> mapper.toMovie(dto, m));
+        Movie updatedMovie = mapper.toMovie(dto);
+
+        checkUniqueConstraint(updatedMovie);
+        movieRepository.update(movie, (m) -> mapper.toMovie(dto, m));
+    }
+
+    private void checkUniqueConstraint(Movie movie){
+        if (movieRepository.existsByNameAndDirectorName(movie.getName(), movie.getDirector().getName())) {
+            throw new BusinessUniqueConstraintException(
+                    String.format("Movie with name '%s' and director '%s' already exists",
+                            movie.getName(),
+                            movie.getDirector().getName()
+                    )
+            );
+        }
     }
 
     public void delete(long id) {
-        repository.deleteById(id);
+        movieRepository.deleteById(id);
     }
 
-    public MovieLazyResponseDto lazyGet(MovieLazyBeanParamDto lazyBeanParamDto) {
+    public MovieLazyResponseDto lazyGet(@Valid MovieLazyBeanParamDto lazyBeanParamDto) {
         Map<String, Object> filterBy = getFilterBy(lazyBeanParamDto);
 
         List<Movie> data = lazyRepository.load(
@@ -70,7 +105,7 @@ public class MovieService {
         return new MovieLazyResponseDto(mapper.toDto(data), totalRecords);
     }
 
-    private Map<String, Object> getFilterBy(MovieLazyBeanParamDto lazyBeanParamDto) {
+    private Map<String, Object> getFilterBy(@Valid MovieLazyBeanParamDto lazyBeanParamDto) {
         Map<String, Object> filterBy = new HashMap<>();
         if (lazyBeanParamDto.getIdFilter() != null)
             filterBy.put("id", lazyBeanParamDto.getIdFilter());
@@ -86,7 +121,7 @@ public class MovieService {
     }
 
     public MovieCountResponseDto countByTagline(String tagline) {
-        Long count = repository.findAll().stream()
+        Long count = movieRepository.findAll().stream()
                 .map(Movie::getTagline)
                 .filter(t -> t.equals(tagline))
                 .count();
@@ -94,7 +129,7 @@ public class MovieService {
     }
 
     public MovieCountResponseDto countLessThanGoldenPalm(long baseCount) {
-        Long count = repository.findAll().stream()
+        Long count = movieRepository.findAll().stream()
                 .map(Movie::getGoldenPalmCount)
                 .filter(c -> c < baseCount)
                 .count();
@@ -102,7 +137,7 @@ public class MovieService {
     }
 
     public MovieCountResponseDto countGreaterThanGoldenPalm(long baseCount) {
-        Long count = repository.findAll().stream()
+        Long count = movieRepository.findAll().stream()
                 .map(Movie::getGoldenPalmCount)
                 .filter(c -> c > baseCount)
                 .count();
@@ -110,7 +145,7 @@ public class MovieService {
     }
 
     public List<PersonResponseDto> getDirectorsWithoutOscars() {
-        List<Movie> movies = repository.findAll();
+        List<Movie> movies = movieRepository.findAll();
         List<Person> directors = movies.stream()
                 .filter(m -> m.getOscarsCount() == 0)
                 .map(Movie::getDirector)
@@ -123,10 +158,10 @@ public class MovieService {
     }
 
     public void addOscarToRated() {
-        repository.findAll().stream()
+        movieRepository.findAll().stream()
                 .filter(m -> Objects.equals(m.getMpaaRating(), (MpaaRating.R)))
                 .forEach(m -> {
-                    repository.update(m, (mv) -> mv.setOscarsCount(m.getOscarsCount() + 1));
+                    movieRepository.update(m, (mv) -> mv.setOscarsCount(m.getOscarsCount() + 1));
                 });
     }
 }

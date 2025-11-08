@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Interstellar",
+    "coordinates": {
+      "x": -730.0,
+      "y": 450
+    },
+    "oscarsCount": 1,
+    "budget": 165000000.0,
+    "totalBoxOffice": 677471339,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "Alice Johnson",
+      "eyeColor": "BROWN",
+      "hairColor": "GREEN",
+      "weight": 72.3,
+      "nationality": "UNITED_KINGDOM",
+      "location": {
+        "x": 8.0,
+        "y": 18.2,
+        "z": 32.1
+      }
+    },
+    "screenwriter": {
+      "name": "Charlie Wilson",
+      "eyeColor": "YELLOW",
+      "hairColor": "YELLOW",
+      "weight": 68.5,
+      "nationality": "INDIA",
+      "location": {
+        "x": 9.0,
+        "y": 16.8,
+        "z": 28.5
+      }
+    },
+    "operator": {
+      "name": "John Doe",
+      "eyeColor": "GREEN",
+      "hairColor": "BROWN",
+      "weight": 70.5,
+      "nationality": "FRANCE",
+      "location": {
+        "x": 10.5,
+        "y": 20.7,
+        "z": 30.0
+      }
+    },
+    "length": 169,
+    "goldenPalmCount": 3,
+    "usaBoxOffice": 188020017,
+    "tagline": "Mankind was born on Earth. It was never meant to die here.",
+    "genre": "TRAGEDY"
+  }
+]

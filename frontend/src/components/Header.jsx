@@ -25,6 +25,16 @@ const Header = () => {
             )
         },
         {
+            label: 'Операции импорта',
+            icon: 'pi pi-download',
+            template: (item) => (
+                <Link to="/import-operations" className="p-menuitem-link">
+                    <span className={item.icon}></span>
+                    <span className="mx-2">{item.label}</span>
+                </Link>
+            )
+        },
+        {
             label: 'Специальные операции',
             icon: 'pi pi-cog',
             template: (item) => (

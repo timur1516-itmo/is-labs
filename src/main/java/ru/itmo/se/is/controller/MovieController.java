@@ -1,7 +1,6 @@
 package ru.itmo.se.is.controller;
 
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -10,6 +9,7 @@ import jakarta.ws.rs.core.UriInfo;
 import ru.itmo.se.is.dto.movie.MovieLazyBeanParamDto;
 import ru.itmo.se.is.dto.movie.MovieRequestDto;
 import ru.itmo.se.is.dto.movie.MovieResponseDto;
+import ru.itmo.se.is.mapper.MovieMapper;
 import ru.itmo.se.is.service.MovieService;
 import ru.itmo.se.is.service.NotificationService;
 import ru.itmo.se.is.websocket.WebSocketMessageType;
@@ -25,15 +25,17 @@ public class MovieController {
     private MovieService service;
     @Inject
     private NotificationService notificationService;
+    @Inject
+    private MovieMapper movieMapper;
 
     @GET
-    public Response getAllMovies(@Valid @BeanParam MovieLazyBeanParamDto lazyBeanParamDto) {
+    public Response getAllMovies(@BeanParam MovieLazyBeanParamDto lazyBeanParamDto) {
         return Response.ok(service.lazyGet(lazyBeanParamDto)).build();
     }
 
     @POST
-    public Response createMovie(@Context UriInfo uriInfo, @Valid MovieRequestDto dto) {
-        MovieResponseDto createdMovie = service.create(dto);
+    public Response createMovie(@Context UriInfo uriInfo, MovieRequestDto dto) {
+        MovieResponseDto createdMovie = movieMapper.toDto(service.create(dto));
 
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path("{id}")
@@ -47,7 +49,7 @@ public class MovieController {
 
     @PATCH
     @Path("/{id}")
-    public Response updateMovie(@PathParam("id") long id, @Valid MovieRequestDto dto) {
+    public Response updateMovie(@PathParam("id") long id, MovieRequestDto dto) {
         service.update(id, dto);
         notificationService.notifyAll(WebSocketMessageType.MOVIE);
         return Response.noContent().build();

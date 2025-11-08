@@ -3,6 +3,7 @@ package ru.itmo.se.is.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import ru.itmo.se.is.entity.value.MovieGenre;
 import ru.itmo.se.is.entity.value.MpaaRating;
 
@@ -12,6 +13,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class Movie {
     private Long id;
     private String name;

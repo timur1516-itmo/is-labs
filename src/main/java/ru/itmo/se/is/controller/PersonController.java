@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.UriInfo;
 import ru.itmo.se.is.dto.person.PersonLazyBeanParamDto;
 import ru.itmo.se.is.dto.person.PersonRequestDto;
 import ru.itmo.se.is.dto.person.PersonResponseDto;
+import ru.itmo.se.is.mapper.PersonMapper;
 import ru.itmo.se.is.service.NotificationService;
 import ru.itmo.se.is.service.PersonService;
 import ru.itmo.se.is.websocket.WebSocketMessageType;
@@ -25,15 +26,17 @@ public class PersonController {
     private PersonService service;
     @Inject
     private NotificationService notificationService;
+    @Inject
+    private PersonMapper personMapper;
 
     @GET
-    public Response getAllPeople(@Valid @BeanParam PersonLazyBeanParamDto lazyBeanParamDto) {
+    public Response getAllPeople(@BeanParam PersonLazyBeanParamDto lazyBeanParamDto) {
         return Response.ok(service.lazyGet(lazyBeanParamDto)).build();
     }
 
     @POST
-    public Response createPerson(@Context UriInfo uriInfo, @Valid PersonRequestDto dto) {
-        PersonResponseDto createdPerson = service.create(dto);
+    public Response createPerson(@Context UriInfo uriInfo, PersonRequestDto dto) {
+        PersonResponseDto createdPerson = personMapper.toDto(service.create(dto));
 
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path("{id}")
@@ -45,7 +48,7 @@ public class PersonController {
 
     @PATCH
     @Path("/{id}")
-    public Response updatePerson(@PathParam("id") long id, @Valid PersonRequestDto dto) {
+    public Response updatePerson(@PathParam("id") long id, PersonRequestDto dto) {
         service.update(id, dto);
         notificationService.notifyAll(WebSocketMessageType.PERSON);
         return Response.noContent().build();

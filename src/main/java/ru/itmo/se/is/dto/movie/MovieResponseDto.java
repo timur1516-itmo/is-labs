@@ -22,7 +22,7 @@ public class MovieResponseDto implements Serializable {
     private CoordinatesResponseDto coordinates;
     private ZonedDateTime creationDate;
     private Integer oscarsCount;
-    private float budget;
+    private Float budget;
     private Integer totalBoxOffice;
     private MpaaRating mpaaRating;
     private PersonResponseDto director;

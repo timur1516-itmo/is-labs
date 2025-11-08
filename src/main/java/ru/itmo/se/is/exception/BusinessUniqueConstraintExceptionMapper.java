@@ -5,14 +5,14 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 @Provider
-public class DeletionConflictExceptionMapper implements ExceptionMapper<DeletionConflictException> {
+public class BusinessUniqueConstraintExceptionMapper implements ExceptionMapper<BusinessUniqueConstraintException> {
     @Override
-    public Response toResponse(DeletionConflictException exception) {
+    public Response toResponse(BusinessUniqueConstraintException exception) {
         ProblemDetail problemDetail = ProblemDetail.builder()
-                .title("Could not delete entity")
+                .title("Unique constraint violation")
                 .detail(exception.getMessage())
                 .status(Response.Status.CONFLICT.getStatusCode())
-                .code(ErrorCode.DELETION_CONFLICT.name())
+                .code(ErrorCode.UNIQUE_CONSTRAINT_VIOLATION.name())
                 .build();
         return Response.status(Response.Status.CONFLICT).entity(problemDetail).build();
     }

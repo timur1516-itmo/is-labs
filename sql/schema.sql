@@ -1,6 +1,6 @@
 CREATE TABLE person
 (
-    id          BIGSERIAL PRIMARY KEY,
+    id          BIGINT PRIMARY KEY,
     name        VARCHAR(255)     NOT NULL CHECK (name <> ''),
     eye_color   VARCHAR(255) CHECK (eye_color IN ('GREEN', 'YELLOW', 'BROWN') OR eye_color IS NULL),
     hair_color  VARCHAR(255)     NOT NULL CHECK (hair_color IN ('GREEN', 'YELLOW', 'BROWN')),
@@ -10,16 +10,16 @@ CREATE TABLE person
     location_x  FLOAT            NOT NULL,
     location_y  DOUBLE PRECISION NOT NULL,
     location_z  DOUBLE PRECISION NOT NULL,
-    version BIGINT NOT NULL DEFAULT 0
+    version     BIGINT           NOT NULL DEFAULT 0
 );
 
 CREATE TABLE movie
 (
-    id                BIGSERIAL PRIMARY KEY,
+    id                BIGINT PRIMARY KEY,
     name              VARCHAR(255)     NOT NULL CHECK (name <> ''),
     coordinates_x     DOUBLE PRECISION NOT NULL CHECK (coordinates_x > -738),
     coordinates_y     BIGINT           NOT NULL CHECK (coordinates_y <= 462),
-    creation_data     TIMESTAMPTZ      NOT NULL DEFAULT NOW(),
+    creation_date     TIMESTAMPTZ      NOT NULL DEFAULT NOW(),
     oscars_count      INTEGER          NOT NULL CHECK (oscars_count > 0),
     budget            FLOAT            NOT NULL CHECK (budget > 0),
     total_box_office  INTEGER          NOT NULL CHECK (total_box_office > 0),
@@ -32,5 +32,28 @@ CREATE TABLE movie
     usa_box_office    INTEGER          NOT NULL CHECK (usa_box_office > 0),
     tagline           VARCHAR(255)     NOT NULL,
     genre             VARCHAR(255) CHECK (genre IN ('DRAMA', 'MUSICAL', 'TRAGEDY') OR genre IS NULL),
-    version BIGINT NOT NULL DEFAULT 0
+    version           BIGINT           NOT NULL DEFAULT 0
 );
+
+CREATE TABLE import_operation
+(
+    id            BIGINT PRIMARY KEY,
+    status        VARCHAR(255) NOT NULL CHECK (status IN ('SUCCESS', 'FAILED')),
+    start_dt      TIMESTAMPTZ  NOT NULL,
+    end_dt        TIMESTAMPTZ,
+    imported_cnt  BIGINT,
+    error_message TEXT
+);
+
+CREATE TABLE SEQUENCE
+(
+    SEQ_NAME  VARCHAR(50) NOT NULL PRIMARY KEY,
+    SEQ_COUNT BIGINT
+);
+
+INSERT INTO SEQUENCE (SEQ_NAME, SEQ_COUNT)
+VALUES ('movie_id_seq', 0);
+INSERT INTO SEQUENCE (SEQ_NAME, SEQ_COUNT)
+VALUES ('person_id_seq', 0);
+INSERT INTO SEQUENCE (SEQ_NAME, SEQ_COUNT)
+VALUES ('import_operation_id_seq', 0);

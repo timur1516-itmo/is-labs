@@ -1,3 +1,4 @@
+// MovieListPage.jsx
 import React, {useEffect, useRef, useState} from 'react'
 import {Card} from 'primereact/card'
 import {Button} from 'primereact/button'
@@ -8,6 +9,7 @@ import {Dialog} from 'primereact/dialog'
 import MovieTable from '../../components/movie/MovieTable.jsx'
 import MovieForm from '../../components/movie/MovieForm.jsx'
 import MovieService from '../../services/MovieService.jsx'
+import ImportService from '../../services/ImportService.jsx'
 
 const MovieListPage = () => {
     const [movies, setMovies] = useState([])
@@ -24,6 +26,7 @@ const MovieListPage = () => {
     const [createDialogVisible, setCreateDialogVisible] = useState(false)
     const [editDialogVisible, setEditDialogVisible] = useState(false)
     const toast = useRef(null)
+    const fileInputRef = useRef(null)
 
     useEffect(() => {
         loadMovies()
@@ -62,6 +65,41 @@ const MovieListPage = () => {
             })
         }
     }
+
+    const handleImport = () => {
+        fileInputRef.current.click();
+    }
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (file.type !== 'application/json') {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Ошибка',
+                    detail: 'Поддерживаются только JSON файлы'
+                });
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                await ImportService.importMovies(formData);
+                loadMovies();
+                toast.current.show({severity: 'success', summary: 'Успех', detail: 'Фильмы импортированы'});
+            } catch (error) {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Ошибка',
+                    detail: error.response?.data?.message || 'Не удалось импортировать фильмы'
+                });
+            } finally {
+                event.target.value = null; // Сбросить значение инпута
+            }
+        }
+    };
 
     const deleteMovie = async (id) => {
         try {
@@ -122,6 +160,14 @@ const MovieListPage = () => {
             <Toast ref={toast}/>
             <ConfirmDialog/>
 
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{display: 'none'}}
+                accept=".json"
+                onChange={handleFileChange}
+            />
+
             {/* Диалог создания */}
             <Dialog
                 header="Создать фильм"
@@ -154,6 +200,12 @@ const MovieListPage = () => {
             <Card title="Список фильмов">
                 <div className="mb-3">
                     <Button label="Создать" icon="pi pi-plus" onClick={handleCreate}/>
+                    <Button
+                        label="Импорт из файла"
+                        icon="pi pi-upload"
+                        onClick={handleImport}
+                        className="ml-2"
+                    />
                     <Button
                         label="Изменить"
                         icon="pi pi-pencil"

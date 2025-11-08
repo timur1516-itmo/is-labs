@@ -10,6 +10,7 @@ import Header from './components/Header'
 import MovieListPage from './pages/movie/MovieListPage.jsx'
 import SpecialOperationsPage from './pages/SpecialOperationsPage'
 import PersonListPage from "./pages/person/PersonListPage.jsx";
+import ImportOperationPage from "./pages/import/ImportOperationPage.jsx";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                             <Route path="/" element={<MovieListPage/>}/>
                             <Route path="/movies" element={<MovieListPage/>}/>
                             <Route path="/people" element={<PersonListPage />} />
+                            <Route path="/import-operations" element={<ImportOperationPage />} />
                             <Route path="/special-operations" element={<SpecialOperationsPage/>}/>
                             <Route path="*" element={<Navigate to="/" replace/>}/>
                         </Routes>

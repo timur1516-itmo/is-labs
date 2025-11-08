@@ -36,7 +36,7 @@ public class MovieRequestDto implements Serializable {
 
     @NotNull
     @Positive
-    private float budget;
+    private Float budget;
 
     @NotNull
     @Positive
@@ -45,17 +45,14 @@ public class MovieRequestDto implements Serializable {
     @Nullable
     private MpaaRating mpaaRating;
 
-    @NotNull
     @ValidEmbedded
     @Valid
     private EmbeddedObjectDto<Long, PersonRequestDto> directorReference;
 
-    @Nullable
     @ValidEmbedded(nullable = true)
     @Valid
     private EmbeddedObjectDto<Long, PersonRequestDto> screenwriterReference;
 
-    @Nullable
     @ValidEmbedded(nullable = true)
     @Valid
     private EmbeddedObjectDto<Long, PersonRequestDto> operatorReference;
