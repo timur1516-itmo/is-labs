@@ -29,6 +29,7 @@ public class EclipseLinkSessionProvider {
         DatabaseLogin login = new DatabaseLogin();
         login.setConnector(new JNDIConnector(dataSource));
         login.setPlatform(new PostgreSQLPlatform());
+        login.getDefaultSequence().setPreallocationSize(1);
 
         project.setDatasourceLogin(login);
 
@@ -37,8 +38,6 @@ public class EclipseLinkSessionProvider {
         DatabaseSession session = project.createDatabaseSession();
         session.getSessionLog().setLevel(SessionLog.FINE);
         session.login();
-
-        session.executeNonSelectingSQL("SET search_path TO public");
 
         return session;
     }
