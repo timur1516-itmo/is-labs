@@ -1,0 +1,251 @@
+[
+  {
+    "name": "Inception",
+    "coordinates": {
+      "x": -737.5,
+      "y": 462
+    },
+    "oscarsCount": 4,
+    "budget": 160000000.0,
+    "totalBoxOffice": 836836807,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "John Doe",
+      "eyeColor": "GREEN",
+      "hairColor": "BROWN",
+      "weight": 70.5,
+      "nationality": "FRANCE",
+      "location": {
+        "x": 10.5,
+        "y": 20.7,
+        "z": 30.0
+      }
+    },
+    "screenwriter": {
+      "name": "Jane Smith",
+      "eyeColor": "YELLOW",
+      "hairColor": "YELLOW",
+      "weight": 65.0,
+      "nationality": "JAPAN",
+      "location": {
+        "x": 5.0,
+        "y": 15.5,
+        "z": 25.0
+      }
+    },
+    "operator": {
+      "name": "Alice Johnson",
+      "eyeColor": "BROWN",
+      "hairColor": "GREEN",
+      "weight": 72.3,
+      "nationality": "UNITED_KINGDOM",
+      "location": {
+        "x": 8.0,
+        "y": 18.2,
+        "z": 32.1
+      }
+    },
+    "length": 148,
+    "goldenPalmCount": 2,
+    "usaBoxOffice": 292576195,
+    "tagline": "A thief who steals corporate secrets...",
+    "genre": "DRAMA"
+  },
+  {
+    "name": "The Matrix",
+    "coordinates": {
+      "x": -700.0,
+      "y": 400
+    },
+    "oscarsCount": 3,
+    "budget": 63000000.0,
+    "totalBoxOffice": 467200000,
+    "mpaaRating": "R",
+    "director": {
+      "name": "Jane Smith",
+      "eyeColor": "YELLOW",
+      "hairColor": "YELLOW",
+      "weight": 65.0,
+      "nationality": "JAPAN",
+      "location": {
+        "x": 5.0,
+        "y": 15.5,
+        "z": 25.0
+      }
+    },
+    "screenwriter": {
+      "name": "John Doe",
+      "eyeColor": "GREEN",
+      "hairColor": "BROWN",
+      "weight": 70.5,
+      "nationality": "FRANCE",
+      "location": {
+        "x": 10.5,
+        "y": 20.7,
+        "z": 30.0
+      }
+    },
+    "operator": {
+      "name": "Bob Brown",
+      "eyeColor": null,
+      "hairColor": "BROWN",
+      "weight": 80.0,
+      "nationality": "VATICAN",
+      "location": {
+        "x": 12.0,
+        "y": 22.0,
+        "z": 40.0
+      }
+    },
+    "length": 136,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 171479924,
+    "tagline": "Welcome to the Real World.",
+    "genre": "MUSICAL"
+  },
+  {
+    "name": "Interstellar",
+    "coordinates": {
+      "x": -730.0,
+      "y": 450
+    },
+    "oscarsCount": 1,
+    "budget": 165000000.0,
+    "totalBoxOffice": 677471339,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "Alice Johnson",
+      "eyeColor": "BROWN",
+      "hairColor": "GREEN",
+      "weight": 72.3,
+      "nationality": "UNITED_KINGDOM",
+      "location": {
+        "x": 8.0,
+        "y": 18.2,
+        "z": 32.1
+      }
+    },
+    "screenwriter": {
+      "name": "Charlie Wilson",
+      "eyeColor": "YELLOW",
+      "hairColor": "YELLOW",
+      "weight": 68.5,
+      "nationality": "INDIA",
+      "location": {
+        "x": 9.0,
+        "y": 16.8,
+        "z": 28.5
+      }
+    },
+    "operator": {
+      "name": "John Doe",
+      "eyeColor": "GREEN",
+      "hairColor": "BROWN",
+      "weight": 70.5,
+      "nationality": "FRANCE",
+      "location": {
+        "x": 10.5,
+        "y": 20.7,
+        "z": 30.0
+      }
+    },
+    "length": 169,
+    "goldenPalmCount": 3,
+    "usaBoxOffice": 188020017,
+    "tagline": "Mankind was born on Earth. It was never meant to die here.",
+    "genre": "TRAGEDY"
+  },
+  {
+    "name": "Titanic",
+    "coordinates": {
+      "x": -720.0,
+      "y": 300
+    },
+    "oscarsCount": 11,
+    "budget": 200000000.0,
+    "totalBoxOffice": 677471339,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "Bob Brown",
+      "eyeColor": null,
+      "hairColor": "BROWN",
+      "weight": 80.0,
+      "nationality": "VATICAN",
+      "location": {
+        "x": 12.0,
+        "y": 22.0,
+        "z": 40.0
+      }
+    },
+    "screenwriter": {
+      "name": "Alice Johnson",
+      "eyeColor": "BROWN",
+      "hairColor": "GREEN",
+      "weight": 72.3,
+      "nationality": "UNITED_KINGDOM",
+      "location": {
+        "x": 8.0,
+        "y": 18.2,
+        "z": 32.1
+      }
+    },
+    "operator": {
+      "name": "Jane Smith",
+      "eyeColor": "YELLOW",
+      "hairColor": "YELLOW",
+      "weight": 65.0,
+      "nationality": "JAPAN",
+      "location": {
+        "x": 5.0,
+        "y": 15.5,
+        "z": 25.0
+      }
+    },
+    "length": 194,
+    "goldenPalmCount": 4,
+    "usaBoxOffice": 659363944,
+    "tagline": "Nothing on Earth could come between them.",
+    "genre": "DRAMA"
+  },
+  {
+    "name": "Avengers: Endgame",
+    "coordinates": {
+      "x": -710.0,
+      "y": 400
+    },
+    "oscarsCount": 1,
+    "budget": 356000000.0,
+    "totalBoxOffice": 467200000,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "Charlie Wilson",
+      "eyeColor": "YELLOW",
+      "hairColor": "YELLOW",
+      "weight": 68.5,
+      "nationality": "INDIA",
+      "location": {
+        "x": 9.0,
+        "y": 16.8,
+        "z": 28.5
+      }
+    },
+    "screenwriter": {
+      "name": "Bob Brown",
+      "eyeColor": null,
+      "hairColor": "BROWN",
+      "weight": 80.0,
+      "nationality": "VATICAN",
+      "location": {
+        "x": 12.0,
+        "y": 22.0,
+        "z": 40.0
+      }
+    },
+    "operator": null,
+    "length": 181,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 858373000,
+    "tagline": "Part of the journey is the end.",
+    "genre": "MUSICAL"
+  }
+]
