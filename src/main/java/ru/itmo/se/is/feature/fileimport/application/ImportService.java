@@ -12,6 +12,8 @@ import ru.itmo.se.is.feature.fileimport.infrastructure.parser.MovieImportFilePar
 import ru.itmo.se.is.feature.movie.api.dto.MovieRequestDto;
 import ru.itmo.se.is.feature.movie.application.MovieService;
 import ru.itmo.se.is.platform.db.eclipselink.tx.annotation.Transactional;
+import ru.itmo.se.is.shared.notification.NotificationMessageType;
+import ru.itmo.se.is.shared.notification.NotificationService;
 
 import java.io.InputStream;
 import java.time.ZonedDateTime;
@@ -29,6 +31,8 @@ public class ImportService {
     private MovieService movieService;
     @Inject
     private ImportOperationService importOperationService;
+    @Inject
+    private NotificationService notificationService;
 
     public ImportOperationResponseDto importMovies(FileUploadRequestDto requestDto) {
         ImportOperation importOperation = new ImportOperation();
@@ -47,6 +51,8 @@ public class ImportService {
             importOperation.setErrorMessage(ex.getMessage());
             importOperationService.saveImportOperation(importOperation);
             throw ex;
+        } finally {
+            notificationService.notifyAll(NotificationMessageType.IMPORT_OPERATION);
         }
     }
 
