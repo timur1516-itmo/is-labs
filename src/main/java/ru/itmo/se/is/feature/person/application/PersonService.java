@@ -4,9 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import ru.itmo.se.is.feature.person.api.dto.PersonLazyBeanParamDto;
-import ru.itmo.se.is.feature.person.api.dto.PersonLazyResponseDto;
+import ru.itmo.se.is.feature.person.api.dto.PersonPagingAndSortingBeanParamDto;
+import ru.itmo.se.is.feature.person.api.dto.PersonPagingAndSortingResponseDto;
 import ru.itmo.se.is.feature.person.api.dto.PersonRequestDto;
+import ru.itmo.se.is.feature.person.api.dto.PersonResponseDto;
 import ru.itmo.se.is.feature.person.domain.Person;
 import ru.itmo.se.is.feature.person.domain.PersonRepository;
 import ru.itmo.se.is.feature.person.infrastructure.mapper.PersonMapper;
@@ -24,29 +25,25 @@ public class PersonService {
     private PersonRepository personRepository;
 
     @Inject
-    private PersonMapper mapper;
+    private PersonMapper personMapper;
 
-    public Person create(@Valid PersonRequestDto dto) {
-        Person person = mapper.toPerson(dto);
-
+    public PersonResponseDto create(@Valid PersonRequestDto dto) {
+        Person person = personMapper.toPerson(dto);
         checkCreateUniqueConstraint(person);
-        Person savedPerson = personRepository.save(person);
-
-        return savedPerson;
+        return personMapper.toDto(personRepository.save(person));
     }
 
     public Person createOrGetExisting(@Valid PersonRequestDto dto) {
         return personRepository.findByName(dto.getName())
                 .orElseGet(() -> {
-                    Person person = mapper.toPerson(dto);
-                    Person savedPerson = personRepository.save(person);
-                    return savedPerson;
+                    Person person = personMapper.toPerson(dto);
+                    return personRepository.save(person);
                 });
     }
 
     public void update(long id, @Valid PersonRequestDto dto) {
         Person person = getById(id);
-        mapper.toPerson(dto, person);
+        personMapper.toPerson(dto, person);
         checkUpdateUniqueConstraint(person);
         personRepository.save(person);
     }
@@ -71,30 +68,30 @@ public class PersonService {
         personRepository.delete(getById(id));
     }
 
-    public PersonLazyResponseDto lazyGet(@Valid PersonLazyBeanParamDto lazyBeanParamDto) {
-        Map<String, Object> filterBy = getFilterBy(lazyBeanParamDto);
+    public PersonPagingAndSortingResponseDto getPagingAndSorting(@Valid PersonPagingAndSortingBeanParamDto dto) {
+        Map<String, Object> filterBy = getFilterBy(dto);
 
         List<Person> data = personRepository.load(
-                lazyBeanParamDto.getFirst(),
-                lazyBeanParamDto.getPageSize(),
-                lazyBeanParamDto.getSortField(),
-                lazyBeanParamDto.getSortOrder(),
+                dto.getFirst(),
+                dto.getPageSize(),
+                dto.getSortField(),
+                dto.getSortOrder(),
                 filterBy
         );
         long totalRecords = personRepository.count(filterBy);
-        return new PersonLazyResponseDto(mapper.toDto(data), totalRecords);
+        return new PersonPagingAndSortingResponseDto(personMapper.toDto(data), totalRecords);
     }
 
-    private Map<String, Object> getFilterBy(@Valid PersonLazyBeanParamDto lazyBeanParamDto) {
+    private Map<String, Object> getFilterBy(@Valid PersonPagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = new HashMap<>();
-        if (lazyBeanParamDto.getNameFilter() != null)
-            filterBy.put("name", lazyBeanParamDto.getNameFilter());
-        if (lazyBeanParamDto.getEyeColorFilter() != null)
-            filterBy.put("eyeColor", lazyBeanParamDto.getEyeColorFilter());
-        if (lazyBeanParamDto.getHairColorFilter() != null)
-            filterBy.put("hairColor", lazyBeanParamDto.getHairColorFilter());
-        if (lazyBeanParamDto.getNationalityFilter() != null)
-            filterBy.put("nationality", lazyBeanParamDto.getNationalityFilter());
+        if (dto.getNameFilter() != null)
+            filterBy.put("name", dto.getNameFilter());
+        if (dto.getEyeColorFilter() != null)
+            filterBy.put("eyeColor", dto.getEyeColorFilter());
+        if (dto.getHairColorFilter() != null)
+            filterBy.put("hairColor", dto.getHairColorFilter());
+        if (dto.getNationalityFilter() != null)
+            filterBy.put("nationality", dto.getNationalityFilter());
         return filterBy;
     }
 

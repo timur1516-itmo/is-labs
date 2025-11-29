@@ -4,7 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationLazyBeanParamDto;
+import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationPagingAndSortingBeanParamDto;
 import ru.itmo.se.is.feature.fileimport.application.ImportOperationService;
 
 @Path("/imports")
@@ -16,7 +16,7 @@ public class ImportOperationController {
     private ImportOperationService importOperationService;
 
     @GET
-    public Response getAllImportOperations(@BeanParam ImportOperationLazyBeanParamDto lazyBeanParamDto) {
-        return Response.ok(importOperationService.lazyGet(lazyBeanParamDto)).build();
+    public Response getAllImportOperations(@BeanParam ImportOperationPagingAndSortingBeanParamDto lazyBeanParamDto) {
+        return Response.ok(importOperationService.getPagingAndSorting(lazyBeanParamDto)).build();
     }
 }

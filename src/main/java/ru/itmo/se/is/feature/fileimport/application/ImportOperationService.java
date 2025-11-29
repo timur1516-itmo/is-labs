@@ -4,8 +4,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationLazyBeanParamDto;
-import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationLazyResponseDto;
+import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationPagingAndSortingBeanParamDto;
+import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationPagingAndSortingResponseDto;
+import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationResponseDto;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperation;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperationRepository;
 import ru.itmo.se.is.feature.fileimport.infrastructure.mapper.ImportOperationMapper;
@@ -21,31 +22,33 @@ public class ImportOperationService {
     @Inject
     private ImportOperationRepository importOperationRepository;
     @Inject
-    private ImportOperationMapper mapper;
+    private ImportOperationMapper importOperationMapper;
 
-    public ImportOperation saveImportOperation(ImportOperation importOperation) {
-        return importOperationRepository.save(importOperation);
+    public ImportOperationResponseDto saveImportOperation(ImportOperation importOperation) {
+        return importOperationMapper.toDto(
+                importOperationRepository.save(importOperation)
+        );
     }
 
-    public ImportOperationLazyResponseDto lazyGet(@Valid ImportOperationLazyBeanParamDto lazyBeanParamDto) {
-        Map<String, Object> filterBy = getFilterBy(lazyBeanParamDto);
+    public ImportOperationPagingAndSortingResponseDto getPagingAndSorting(@Valid ImportOperationPagingAndSortingBeanParamDto dto) {
+        Map<String, Object> filterBy = getFilterBy(dto);
         List<ImportOperation> data = importOperationRepository.load(
-                lazyBeanParamDto.getFirst(),
-                lazyBeanParamDto.getPageSize(),
-                lazyBeanParamDto.getSortField(),
-                lazyBeanParamDto.getSortOrder(),
+                dto.getFirst(),
+                dto.getPageSize(),
+                dto.getSortField(),
+                dto.getSortOrder(),
                 filterBy
         );
         long totalRecords = importOperationRepository.count(filterBy);
-        return new ImportOperationLazyResponseDto(mapper.toDto(data), totalRecords);
+        return new ImportOperationPagingAndSortingResponseDto(importOperationMapper.toDto(data), totalRecords);
     }
 
-    private Map<String, Object> getFilterBy(@Valid ImportOperationLazyBeanParamDto lazyBeanParamDto) {
+    private Map<String, Object> getFilterBy(@Valid ImportOperationPagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = new HashMap<>();
-        if (lazyBeanParamDto.getIdFilter() != null)
-            filterBy.put("id", lazyBeanParamDto.getIdFilter());
-        if (lazyBeanParamDto.getStatusFilter() != null)
-            filterBy.put("status", lazyBeanParamDto.getStatusFilter());
+        if (dto.getIdFilter() != null)
+            filterBy.put("id", dto.getIdFilter());
+        if (dto.getStatusFilter() != null)
+            filterBy.put("status", dto.getStatusFilter());
         return filterBy;
     }
 }

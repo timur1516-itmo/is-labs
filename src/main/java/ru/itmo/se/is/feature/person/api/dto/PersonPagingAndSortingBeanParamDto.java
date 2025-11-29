@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonLazyBeanParamDto implements Serializable {
+public class PersonPagingAndSortingBeanParamDto implements Serializable {
     @Min(0)
     @DefaultValue("0")
     @QueryParam("first")

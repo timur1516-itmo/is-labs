@@ -7,7 +7,6 @@ import lombok.Setter;
 import ru.itmo.se.is.feature.fileimport.domain.value.ImportStatus;
 
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 @Getter
 @Setter

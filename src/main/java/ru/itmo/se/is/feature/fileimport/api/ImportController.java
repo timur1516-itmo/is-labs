@@ -9,7 +9,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import ru.itmo.se.is.feature.fileimport.api.dto.FileUploadRequestDto;
-import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationResponseDto;
 import ru.itmo.se.is.feature.fileimport.application.ImportService;
 import ru.itmo.se.is.platform.web.util.MultipartImportFileUtil;
 
@@ -26,7 +25,7 @@ public class ImportController {
     @POST
     public Response importMovies(MultipartFormDataInput input) {
         FileUploadRequestDto requestDto = multipartImportFileUtil.from(input);
-        ImportOperationResponseDto responseDto = importService.importMovies(requestDto);
-        return Response.ok(responseDto).build();
+        importService.importMovies(requestDto);
+        return Response.noContent().build();
     }
 }

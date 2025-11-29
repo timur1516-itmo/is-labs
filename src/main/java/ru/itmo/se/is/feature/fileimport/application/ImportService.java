@@ -4,7 +4,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import ru.itmo.se.is.feature.fileimport.api.dto.FileUploadRequestDto;
-import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationResponseDto;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperation;
 import ru.itmo.se.is.feature.fileimport.domain.value.ImportStatus;
 import ru.itmo.se.is.feature.fileimport.infrastructure.mapper.ImportOperationMapper;
@@ -34,7 +33,7 @@ public class ImportService {
     @Inject
     private NotificationService notificationService;
 
-    public ImportOperationResponseDto importMovies(FileUploadRequestDto requestDto) {
+    public void importMovies(FileUploadRequestDto requestDto) {
         ImportOperation importOperation = new ImportOperation();
         MovieImportFileParser parser = importFileParserFactory.getParser(requestDto.getFormat());
         InputStream inputStream = requestDto.getFileStream();
@@ -44,7 +43,7 @@ public class ImportService {
             importOperation.setEndDt(ZonedDateTime.now());
             importOperation.setImportedCnt(cnt);
             importOperation.setStatus(ImportStatus.SUCCESS);
-            return importOperationMapper.toDto(importOperationService.saveImportOperation(importOperation));
+            importOperationService.saveImportOperation(importOperation);
         } catch (Exception ex) {
             importOperation.setStatus(ImportStatus.FAILED);
             importOperation.setEndDt(ZonedDateTime.now());

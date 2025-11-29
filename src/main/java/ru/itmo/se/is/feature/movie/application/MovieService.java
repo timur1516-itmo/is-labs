@@ -4,10 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import ru.itmo.se.is.feature.movie.api.dto.MovieCountResponseDto;
-import ru.itmo.se.is.feature.movie.api.dto.MovieLazyBeanParamDto;
-import ru.itmo.se.is.feature.movie.api.dto.MovieLazyResponseDto;
-import ru.itmo.se.is.feature.movie.api.dto.MovieRequestDto;
+import ru.itmo.se.is.feature.movie.api.dto.*;
 import ru.itmo.se.is.feature.movie.domain.Movie;
 import ru.itmo.se.is.feature.movie.domain.MovieRepository;
 import ru.itmo.se.is.feature.movie.domain.value.MpaaRating;
@@ -33,7 +30,7 @@ public class MovieService {
     private MovieRepository movieRepository;
 
     @Inject
-    private MovieMapper mapper;
+    private MovieMapper movieMapper;
 
     @Inject
     private PersonMapper personMapper;
@@ -41,30 +38,18 @@ public class MovieService {
     @Inject
     private PersonService personService;
 
-    public Movie create(@Valid MovieRequestDto dto) {
-        Movie movie = mapper.toMovie(dto);
-
-        if (dto.getDirectorReference().isNew()) {
-            movie.setDirector(personService.createOrGetExisting(dto.getDirectorReference().getValue()));
-        }
-        if (dto.getOperatorReference().isNew()) {
-            movie.setOperator(personService.createOrGetExisting(dto.getOperatorReference().getValue()));
-        }
-        if (dto.getScreenwriterReference().isNew()) {
-            movie.setScreenwriter(personService.createOrGetExisting(dto.getScreenwriterReference().getValue()));
-        }
-
+    public MovieResponseDto create(@Valid MovieRequestDto dto) {
+        Movie movie = movieMapper.toMovie(dto);
+        setEmbeddedFields(movie, dto);
         movie.setCreationDate(ZonedDateTime.now());
-
         checkCreateUniqueConstraint(movie);
-        Movie savedMovie = movieRepository.save(movie);
-
-        return savedMovie;
+        return movieMapper.toDto(movieRepository.save(movie));
     }
 
     public void update(long id, @Valid MovieRequestDto dto) {
         Movie movie = getById(id);
-        mapper.toMovie(dto, movie);
+        setEmbeddedFields(movie, dto);
+        movieMapper.toMovie(dto, movie);
         checkUpdateUniqueConstraint(movie);
         movieRepository.save(movie);
     }
@@ -72,6 +57,21 @@ public class MovieService {
     public Movie getById(long id) {
         return movieRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
+    }
+
+    private void setEmbeddedFields(Movie movie, MovieRequestDto dto) {
+        movie.setDirector(dto.getDirectorReference().isNew() ?
+                personService.createOrGetExisting(dto.getDirectorReference().getValue()) :
+                personService.getById(dto.getDirectorReference().getId())
+        );
+        movie.setOperator(dto.getOperatorReference().isNew() ?
+                personService.createOrGetExisting(dto.getOperatorReference().getValue()) :
+                personService.getById(dto.getOperatorReference().getId())
+        );
+        movie.setScreenwriter(dto.getScreenwriterReference().isNew() ?
+                personService.createOrGetExisting(dto.getScreenwriterReference().getValue()) :
+                personService.getById(dto.getScreenwriterReference().getId())
+        );
     }
 
     private void checkCreateUniqueConstraint(Movie movie) {
@@ -100,32 +100,32 @@ public class MovieService {
         movieRepository.delete(getById(id));
     }
 
-    public MovieLazyResponseDto lazyGet(@Valid MovieLazyBeanParamDto lazyBeanParamDto) {
-        Map<String, Object> filterBy = getFilterBy(lazyBeanParamDto);
+    public MoviePagingAndSortingResponseDto getPagingAndSorting(@Valid MoviePagingAndSortingBeanParamDto dto) {
+        Map<String, Object> filterBy = getFilterBy(dto);
 
         List<Movie> data = movieRepository.load(
-                lazyBeanParamDto.getFirst(),
-                lazyBeanParamDto.getPageSize(),
-                lazyBeanParamDto.getSortField(),
-                lazyBeanParamDto.getSortOrder(),
+                dto.getFirst(),
+                dto.getPageSize(),
+                dto.getSortField(),
+                dto.getSortOrder(),
                 filterBy
         );
         long totalRecords = movieRepository.count(filterBy);
-        return new MovieLazyResponseDto(mapper.toDto(data), totalRecords);
+        return new MoviePagingAndSortingResponseDto(movieMapper.toDto(data), totalRecords);
     }
 
-    private Map<String, Object> getFilterBy(@Valid MovieLazyBeanParamDto lazyBeanParamDto) {
+    private Map<String, Object> getFilterBy(@Valid MoviePagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = new HashMap<>();
-        if (lazyBeanParamDto.getIdFilter() != null)
-            filterBy.put("id", lazyBeanParamDto.getIdFilter());
-        if (lazyBeanParamDto.getNameFilter() != null)
-            filterBy.put("name", lazyBeanParamDto.getNameFilter());
-        if (lazyBeanParamDto.getGenreFilter() != null)
-            filterBy.put("genre", lazyBeanParamDto.getGenreFilter());
-        if (lazyBeanParamDto.getMpaaRatingFilter() != null)
-            filterBy.put("mpaaRating", lazyBeanParamDto.getMpaaRatingFilter());
-        if (lazyBeanParamDto.getTaglineFilter() != null)
-            filterBy.put("tagline", lazyBeanParamDto.getTaglineFilter());
+        if (dto.getIdFilter() != null)
+            filterBy.put("id", dto.getIdFilter());
+        if (dto.getNameFilter() != null)
+            filterBy.put("name", dto.getNameFilter());
+        if (dto.getGenreFilter() != null)
+            filterBy.put("genre", dto.getGenreFilter());
+        if (dto.getMpaaRatingFilter() != null)
+            filterBy.put("mpaaRating", dto.getMpaaRatingFilter());
+        if (dto.getTaglineFilter() != null)
+            filterBy.put("tagline", dto.getTaglineFilter());
         return filterBy;
     }
 

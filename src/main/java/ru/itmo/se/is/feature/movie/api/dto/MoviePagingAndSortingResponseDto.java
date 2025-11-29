@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieLazyResponseDto implements Serializable {
+public class MoviePagingAndSortingResponseDto implements Serializable {
     List<MovieResponseDto> data;
     Long totalRecords;
 }

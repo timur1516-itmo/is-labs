@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import ru.itmo.se.is.feature.movie.api.dto.MovieLazyBeanParamDto;
+import ru.itmo.se.is.feature.movie.api.dto.MoviePagingAndSortingBeanParamDto;
 import ru.itmo.se.is.feature.movie.api.dto.MovieRequestDto;
 import ru.itmo.se.is.feature.movie.api.dto.MovieResponseDto;
 import ru.itmo.se.is.feature.movie.application.MovieService;
@@ -29,13 +29,13 @@ public class MovieController {
     private MovieMapper movieMapper;
 
     @GET
-    public Response getAllMovies(@BeanParam MovieLazyBeanParamDto lazyBeanParamDto) {
-        return Response.ok(service.lazyGet(lazyBeanParamDto)).build();
+    public Response getAllMovies(@BeanParam MoviePagingAndSortingBeanParamDto dto) {
+        return Response.ok(service.getPagingAndSorting(dto)).build();
     }
 
     @POST
     public Response createMovie(@Context UriInfo uriInfo, MovieRequestDto dto) {
-        MovieResponseDto createdMovie = movieMapper.toDto(service.create(dto));
+        MovieResponseDto createdMovie = service.create(dto);
 
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path("{id}")

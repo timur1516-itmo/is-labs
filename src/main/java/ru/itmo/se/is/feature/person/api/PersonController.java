@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import ru.itmo.se.is.feature.person.api.dto.PersonLazyBeanParamDto;
+import ru.itmo.se.is.feature.person.api.dto.PersonPagingAndSortingBeanParamDto;
 import ru.itmo.se.is.feature.person.api.dto.PersonRequestDto;
 import ru.itmo.se.is.feature.person.api.dto.PersonResponseDto;
 import ru.itmo.se.is.feature.person.application.PersonService;
@@ -29,13 +29,13 @@ public class PersonController {
     private PersonMapper personMapper;
 
     @GET
-    public Response getAllPeople(@BeanParam PersonLazyBeanParamDto lazyBeanParamDto) {
-        return Response.ok(service.lazyGet(lazyBeanParamDto)).build();
+    public Response getAllPeople(@BeanParam PersonPagingAndSortingBeanParamDto dto) {
+        return Response.ok(service.getPagingAndSorting(dto)).build();
     }
 
     @POST
     public Response createPerson(@Context UriInfo uriInfo, PersonRequestDto dto) {
-        PersonResponseDto createdPerson = personMapper.toDto(service.create(dto));
+        PersonResponseDto createdPerson = service.create(dto);
 
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path("{id}")

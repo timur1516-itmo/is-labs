@@ -14,7 +14,7 @@ public class RollbackExceptionMapper implements ExceptionMapper<RollbackExceptio
 
     @Override
     public Response toResponse(RollbackException exception) {
-        if(exception.getMessage().equals("ARJUNA016053: Could not commit transaction.")) {
+        if (exception.getMessage().equals("ARJUNA016053: Could not commit transaction.")) {
             return processConcurrentModificationException();
         }
         Throwable cause = exception;
