@@ -2,6 +2,7 @@ package ru.itmo.se.is.feature.person.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import ru.itmo.se.is.feature.person.api.dto.PersonLazyBeanParamDto;
 import ru.itmo.se.is.feature.person.api.dto.PersonLazyResponseDto;
@@ -9,7 +10,6 @@ import ru.itmo.se.is.feature.person.api.dto.PersonRequestDto;
 import ru.itmo.se.is.feature.person.domain.Person;
 import ru.itmo.se.is.feature.person.domain.PersonRepository;
 import ru.itmo.se.is.feature.person.infrastructure.mapper.PersonMapper;
-import ru.itmo.se.is.platform.db.eclipselink.tx.annotation.Transactional;
 import ru.itmo.se.is.shared.exception.EntityAlreadyExistsException;
 import ru.itmo.se.is.shared.exception.EntityNotFoundException;
 
@@ -45,13 +45,10 @@ public class PersonService {
     }
 
     public void update(long id, @Valid PersonRequestDto dto) {
-        Person person = personRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Person with id %d not found", id)));
-        Person updatedPerson = mapper.toPerson(dto);
-        updatedPerson.setId(id);
-
-        checkUpdateUniqueConstraint(updatedPerson);
-        personRepository.update(person, (p) -> mapper.toPerson(dto, p));
+        Person person = getById(id);
+        mapper.toPerson(dto, person);
+        checkUpdateUniqueConstraint(person);
+        personRepository.save(person);
     }
 
     private void checkCreateUniqueConstraint(Person person) {
@@ -71,7 +68,7 @@ public class PersonService {
     }
 
     public void delete(long id) {
-        personRepository.deleteById(id);
+        personRepository.delete(getById(id));
     }
 
     public PersonLazyResponseDto lazyGet(@Valid PersonLazyBeanParamDto lazyBeanParamDto) {

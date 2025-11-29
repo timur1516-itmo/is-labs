@@ -1,50 +1,81 @@
 package ru.itmo.se.is.feature.movie.domain;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import ru.itmo.se.is.feature.movie.domain.coordinates.Coordinates;
 import ru.itmo.se.is.feature.movie.domain.value.MovieGenre;
 import ru.itmo.se.is.feature.movie.domain.value.MpaaRating;
 import ru.itmo.se.is.feature.person.domain.Person;
 
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+
+@Entity
+@Table(name = "movie")
 public class Movie {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Embedded
     private Coordinates coordinates;
+
+    @Column(name = "creation_date", nullable = false, updatable = false)
     private ZonedDateTime creationDate;
+
+    @Column(nullable = false)
     private int oscarsCount;
+
+    @Column(nullable = false)
     private float budget;
+
+    @Column(name = "total_box_office", nullable = false)
     private int totalBoxOffice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mpaa_rating")
     private MpaaRating mpaaRating;
+
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "director_id", nullable = false)
     private Person director;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "screenwriter_id")
     private Person screenwriter;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "operator_id")
     private Person operator;
+
+    @Column(
+            columnDefinition = "integer CHECK (length IS NULL OR length > 0)"
+    )
     private Integer length;
+
+    @Column(name = "golden_palm_count", nullable = false)
     private Integer goldenPalmCount;
+
+    @Column(name = "usa_box_office", nullable = false)
     private int usaBoxOffice;
+
+    @Column(nullable = false)
     private String tagline;
+
+    @Enumerated(EnumType.STRING)
+    @Column
     private MovieGenre genre;
-    private Long version;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Movie movie = (Movie) o;
-        return Objects.equals(id, movie.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : System.identityHashCode(this);
+    @PrePersist
+    public void prePersist() {
+        this.creationDate = ZonedDateTime.now();
     }
 }

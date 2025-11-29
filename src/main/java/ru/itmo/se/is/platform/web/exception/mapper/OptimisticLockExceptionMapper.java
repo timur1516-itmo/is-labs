@@ -1,9 +1,9 @@
 package ru.itmo.se.is.platform.web.exception.mapper;
 
+import jakarta.persistence.OptimisticLockException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import org.eclipse.persistence.exceptions.OptimisticLockException;
 import ru.itmo.se.is.shared.dto.exception.ErrorCode;
 import ru.itmo.se.is.shared.dto.exception.ProblemDetail;
 

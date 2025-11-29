@@ -13,11 +13,9 @@ import java.util.List;
 @Mapper(config = MapperConfig.class)
 public interface PersonMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "version", ignore = true)
     Person toPerson(PersonRequestDto dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "version", ignore = true)
     void toPerson(PersonRequestDto dto, @MappingTarget Person entity);
 
     PersonResponseDto toDto(Person person);

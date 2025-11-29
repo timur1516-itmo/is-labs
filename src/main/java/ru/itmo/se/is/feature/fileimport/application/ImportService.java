@@ -2,6 +2,7 @@ package ru.itmo.se.is.feature.fileimport.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import ru.itmo.se.is.feature.fileimport.api.dto.FileUploadRequestDto;
 import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationResponseDto;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperation;
@@ -11,7 +12,6 @@ import ru.itmo.se.is.feature.fileimport.infrastructure.parser.ImportFileParserFa
 import ru.itmo.se.is.feature.fileimport.infrastructure.parser.MovieImportFileParser;
 import ru.itmo.se.is.feature.movie.api.dto.MovieRequestDto;
 import ru.itmo.se.is.feature.movie.application.MovieService;
-import ru.itmo.se.is.platform.db.eclipselink.tx.annotation.Transactional;
 import ru.itmo.se.is.shared.notification.NotificationMessageType;
 import ru.itmo.se.is.shared.notification.NotificationService;
 

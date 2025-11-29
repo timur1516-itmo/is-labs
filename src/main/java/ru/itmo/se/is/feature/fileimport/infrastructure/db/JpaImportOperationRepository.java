@@ -2,19 +2,19 @@ package ru.itmo.se.is.feature.fileimport.infrastructure.db;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import lombok.NoArgsConstructor;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperation;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperationRepository;
-import ru.itmo.se.is.platform.db.eclipselink.EclipseLinkPagingAndSortingRepository;
-import ru.itmo.se.is.platform.db.eclipselink.UnitOfWorkManager;
+import ru.itmo.se.is.platform.db.jpa.JpaPagingAndSortingRepository;
 
 @ApplicationScoped
 @NoArgsConstructor
-public class EclipseLinkImportOperationRepository
-        extends EclipseLinkPagingAndSortingRepository<ImportOperation, Long>
+public class JpaImportOperationRepository
+        extends JpaPagingAndSortingRepository<ImportOperation, Long>
         implements ImportOperationRepository {
     @Inject
-    public EclipseLinkImportOperationRepository(UnitOfWorkManager unitOfWorkManager) {
-        super(ImportOperation.class, unitOfWorkManager);
+    public JpaImportOperationRepository(EntityManager entityManager) {
+        super(ImportOperation.class, entityManager);
     }
 }

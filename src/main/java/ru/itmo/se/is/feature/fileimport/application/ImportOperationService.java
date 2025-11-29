@@ -2,21 +2,20 @@ package ru.itmo.se.is.feature.fileimport.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationLazyBeanParamDto;
 import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationLazyResponseDto;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperation;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperationRepository;
 import ru.itmo.se.is.feature.fileimport.infrastructure.mapper.ImportOperationMapper;
-import ru.itmo.se.is.platform.db.eclipselink.tx.TransactionalMode;
-import ru.itmo.se.is.platform.db.eclipselink.tx.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @ApplicationScoped
-@Transactional(mode = TransactionalMode.REQUIRES_NEW)
+@Transactional(Transactional.TxType.REQUIRES_NEW)
 public class ImportOperationService {
 
     @Inject

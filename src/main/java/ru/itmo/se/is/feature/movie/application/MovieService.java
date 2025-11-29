@@ -2,6 +2,7 @@ package ru.itmo.se.is.feature.movie.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import ru.itmo.se.is.feature.movie.api.dto.MovieCountResponseDto;
 import ru.itmo.se.is.feature.movie.api.dto.MovieLazyBeanParamDto;
@@ -15,7 +16,6 @@ import ru.itmo.se.is.feature.person.api.dto.PersonResponseDto;
 import ru.itmo.se.is.feature.person.application.PersonService;
 import ru.itmo.se.is.feature.person.domain.Person;
 import ru.itmo.se.is.feature.person.infrastructure.mapper.PersonMapper;
-import ru.itmo.se.is.platform.db.eclipselink.tx.annotation.Transactional;
 import ru.itmo.se.is.shared.exception.EntityAlreadyExistsException;
 import ru.itmo.se.is.shared.exception.EntityNotFoundException;
 
@@ -63,13 +63,15 @@ public class MovieService {
     }
 
     public void update(long id, @Valid MovieRequestDto dto) {
-        Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
-        Movie updatedMovie = mapper.toMovie(dto);
-        updatedMovie.setId(id);
+        Movie movie = getById(id);
+        mapper.toMovie(dto, movie);
+        checkUpdateUniqueConstraint(movie);
+        movieRepository.save(movie);
+    }
 
-        checkUpdateUniqueConstraint(updatedMovie);
-        movieRepository.update(movie, (m) -> mapper.toMovie(dto, m));
+    public Movie getById(long id) {
+        return movieRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
     }
 
     private void checkCreateUniqueConstraint(Movie movie) {
@@ -95,7 +97,7 @@ public class MovieService {
     }
 
     public void delete(long id) {
-        movieRepository.deleteById(id);
+        movieRepository.delete(getById(id));
     }
 
     public MovieLazyResponseDto lazyGet(@Valid MovieLazyBeanParamDto lazyBeanParamDto) {
@@ -168,7 +170,8 @@ public class MovieService {
         movieRepository.findAll().stream()
                 .filter(m -> Objects.equals(m.getMpaaRating(), (MpaaRating.R)))
                 .forEach(m -> {
-                    movieRepository.update(m, (mv) -> mv.setOscarsCount(m.getOscarsCount() + 1));
+                    m.setOscarsCount(m.getOscarsCount() + 1);
+                    movieRepository.save(m);
                 });
     }
 }

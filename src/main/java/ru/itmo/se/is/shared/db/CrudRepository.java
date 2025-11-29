@@ -11,7 +11,7 @@ public interface CrudRepository<T, ID> extends Repository<T, ID> {
 
     T save(T entity);
 
-    void update(T entity, Consumer<T> fieldUpdater);
-
     void deleteById(ID id);
+
+    void delete(T entity);
 }
