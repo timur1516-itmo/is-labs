@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.itmo.se.is.feature.movie.domain.coordinates.Coordinates;
 import ru.itmo.se.is.feature.movie.domain.value.MovieGenre;
 import ru.itmo.se.is.feature.movie.domain.value.MpaaRating;
@@ -14,7 +15,8 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "Movie")
 @Entity
 @Table(name = "movie")
 public class Movie {

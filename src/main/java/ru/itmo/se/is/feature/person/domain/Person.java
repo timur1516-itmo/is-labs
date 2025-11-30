@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.itmo.se.is.feature.person.domain.location.Location;
 import ru.itmo.se.is.feature.person.domain.value.Color;
 import ru.itmo.se.is.feature.person.domain.value.Country;
@@ -11,7 +12,8 @@ import ru.itmo.se.is.feature.person.domain.value.Country;
 @Getter
 @Setter
 @NoArgsConstructor
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "Person")
 @Entity
 @Table(name = "person")
 public class Person {

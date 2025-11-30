@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.itmo.se.is.feature.fileimport.domain.value.ImportStatus;
 
 import java.time.ZonedDateTime;
@@ -11,7 +12,8 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "ImportOperation")
 @Entity
 @Table(name = "import_operation")
 public class ImportOperation {

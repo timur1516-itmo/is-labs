@@ -8,8 +8,19 @@
     <persistence-unit name="my-persistence-unit" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <jta-data-source>java:/jdbc/MyDS</jta-data-source>
+
+        <!--        <class>ru.itmo.se.is.feature.person.domain.Person</class>-->
+        <!--        <class>ru.itmo.se.is.feature.movie.domain.Movie</class>-->
+        <!--        <class>ru.itmo.se.is.feature.fileimport.domain.ImportOperation</class>-->
+
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+
         <properties>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.region.factory_class" value="infinispan"/>
+            <property name="hibernate.cache.infinispan.cfg"
+                      value="org/infinispan/hibernate/cache/commons/builder/infinispan-configs-local.xml"/>
         </properties>
     </persistence-unit>
 </persistence>
