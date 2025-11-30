@@ -23,8 +23,8 @@ tasks.withType(JavaCompile).configureEach {
 
 dependencies {
     compileOnly('jakarta.platform:jakarta.jakartaee-web-api:10.0.0')
-    compileOnly("org.jboss.resteasy:resteasy-multipart-provider:7.0.0.Final")
-    implementation("org.hibernate.orm:hibernate-core:7.1.10.Final")
+    compileOnly("org.apache.cxf:cxf-rt-rs-extension-providers:4.0.10")
+    implementation("org.hibernate.orm:hibernate-core:6.6.37.Final")
 
     compileOnly('org.postgresql:postgresql:42.7.7')
 

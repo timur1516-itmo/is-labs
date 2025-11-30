@@ -2,35 +2,19 @@ package ru.itmo.se.is.platform.web.util;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.core.MultivaluedMap;
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import ru.itmo.se.is.feature.fileimport.api.dto.FileUploadRequestDto;
 import ru.itmo.se.is.feature.fileimport.domain.value.ImportFileFormat;
 
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 @ApplicationScoped
 public class MultipartImportFileUtil {
 
-    private static InputStream getInputStream(InputPart filePart) {
-        InputStream fileStream;
-        try {
-            fileStream = filePart.getBody(InputStream.class, null);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Could not extract file input stream", e);
-        }
-        return fileStream;
-    }
-
-    public FileUploadRequestDto from(MultipartFormDataInput input) {
-        InputPart filePart = getInputPart(input);
-        String fileName = getFileName(filePart);
+    public FileUploadRequestDto from(Attachment attachment) {
+        String fileName = getFileName(attachment);
         ImportFileFormat format = getFormat(fileName);
-        InputStream fileStream = getInputStream(filePart);
+        InputStream fileStream = getInputStream(attachment);
 
         FileUploadRequestDto dto = new FileUploadRequestDto();
         dto.setFileName(fileName);
@@ -40,17 +24,14 @@ public class MultipartImportFileUtil {
         return dto;
     }
 
-    private InputPart getInputPart(MultipartFormDataInput input) {
-        Map<String, List<InputPart>> formParts = input.getFormDataMap();
-
-        List<InputPart> fileParts = formParts.get("file");
-        if (fileParts == null || fileParts.isEmpty()) {
-            throw new IllegalArgumentException("File was not provided (expected form-data param 'file')");
+    private InputStream getInputStream(Attachment attachment) {
+        InputStream fileStream;
+        try {
+            fileStream = attachment.getDataHandler().getInputStream();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Could not extract file input stream", e);
         }
-        if (fileParts.size() > 1) {
-            throw new IllegalArgumentException(String.format("Expected only one file, got: %d", fileParts.size()));
-        }
-        return fileParts.get(0);
+        return fileStream;
     }
 
     private ImportFileFormat getFormat(@NotNull String fileName) {
@@ -72,23 +53,11 @@ public class MultipartImportFileUtil {
         }
     }
 
-    private String getFileName(InputPart part) {
-        MultivaluedMap<String, String> headers = part.getHeaders();
-        String contentDisposition = headers.getFirst("Content-Disposition");
-
-        if (contentDisposition == null) {
-            throw new IllegalArgumentException("Missing 'Content-Disposition' header");
+    private String getFileName(Attachment attachment) {
+        String fileName = attachment.getDataHandler().getName();
+        if (fileName == null || fileName.trim().isEmpty()) {
+            throw new IllegalArgumentException("File name is not provided");
         }
-
-        String fileNameParam = Arrays.stream(contentDisposition.split(";"))
-                .map(String::trim)
-                .filter(s -> s.contains("filename="))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Missing 'filename' param"));
-
-        return fileNameParam
-                .substring("filename=".length())
-                .trim()
-                .replace("\"", "");
+        return fileName.trim();
     }
 }
