@@ -10,6 +10,7 @@ import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationResponseDto;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperation;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperationRepository;
 import ru.itmo.se.is.feature.fileimport.infrastructure.mapper.ImportOperationMapper;
+import ru.itmo.se.is.shared.exception.EntityNotFoundException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,5 +51,10 @@ public class ImportOperationService {
         if (dto.getStatusFilter() != null)
             filterBy.put("status", dto.getStatusFilter());
         return filterBy;
+    }
+
+    public ImportOperation getById(long id) {
+        return importOperationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Import operation with id " + id + " not found"));
     }
 }

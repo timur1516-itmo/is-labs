@@ -36,4 +36,13 @@ public class ImportOperation {
 
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
+
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
+
+    @Column(name = "file_bucket", nullable = false)
+    private String fileBucket;
+
+    @Column(name = "file_object_key", nullable = false)
+    private String fileObjectKey;
 }

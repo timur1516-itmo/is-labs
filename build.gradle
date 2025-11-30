@@ -26,6 +26,8 @@ dependencies {
     compileOnly("org.apache.cxf:cxf-rt-rs-extension-providers:4.0.10")
     implementation("org.hibernate.orm:hibernate-core:6.6.37.Final")
 
+    implementation("io.minio:minio:8.5.17")
+
     compileOnly('org.postgresql:postgresql:42.7.7')
     implementation("org.infinispan:infinispan-hibernate-cache-v66:16.0.2")
 
