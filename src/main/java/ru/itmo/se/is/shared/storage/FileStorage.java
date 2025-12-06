@@ -1,12 +1,10 @@
 package ru.itmo.se.is.shared.storage;
 
-import ru.itmo.se.is.platform.storage.StoredFile;
-
-import java.io.InputStream;
-
 public interface FileStorage {
 
-    StoredFile save(String fileName, InputStream content);
+    void save(String objectKey, byte[] content) throws Exception;
 
-    InputStream get(String bucket, String objectKey);
+    byte[] get(String objectKey) throws Exception;
+
+    void delete(String objectKey) throws Exception;
 }

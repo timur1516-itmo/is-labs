@@ -4,17 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.itmo.se.is.feature.fileimport.domain.value.ImportFileFormat;
+import ru.itmo.se.is.feature.fileimport.domain.value.FileExtension;
 
-import java.io.InputStream;
 import java.io.Serializable;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileUploadRequestDto implements Serializable {
-    private InputStream fileStream;
+public class FileRequestDto implements Serializable {
+    private byte[] content;
     private String fileName;
-    private ImportFileFormat format;
+    private FileExtension fileExtension;
 }

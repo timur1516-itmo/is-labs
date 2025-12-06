@@ -3,14 +3,13 @@ package ru.itmo.se.is.feature.person.application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import ru.itmo.se.is.feature.person.api.dto.PersonPagingAndSortingBeanParamDto;
 import ru.itmo.se.is.feature.person.api.dto.PersonPagingAndSortingResponseDto;
 import ru.itmo.se.is.feature.person.api.dto.PersonRequestDto;
-import ru.itmo.se.is.feature.person.api.dto.PersonResponseDto;
 import ru.itmo.se.is.feature.person.domain.Person;
 import ru.itmo.se.is.feature.person.domain.PersonRepository;
 import ru.itmo.se.is.feature.person.infrastructure.mapper.PersonMapper;
+import ru.itmo.se.is.platform.db.exception.annotation.TranslatePersistenceExceptions;
 import ru.itmo.se.is.shared.exception.EntityAlreadyExistsException;
 import ru.itmo.se.is.shared.exception.EntityNotFoundException;
 
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Transactional
+@TranslatePersistenceExceptions
 @ApplicationScoped
 public class PersonService {
     @Inject
@@ -27,13 +27,13 @@ public class PersonService {
     @Inject
     private PersonMapper personMapper;
 
-    public PersonResponseDto create(@Valid PersonRequestDto dto) {
+    public Person create(PersonRequestDto dto) {
         Person person = personMapper.toPerson(dto);
         checkCreateUniqueConstraint(person);
-        return personMapper.toDto(personRepository.save(person));
+        return personRepository.save(person);
     }
 
-    public Person createOrGetExisting(@Valid PersonRequestDto dto) {
+    public Person createOrGetExisting(PersonRequestDto dto) {
         return personRepository.findByName(dto.getName())
                 .orElseGet(() -> {
                     Person person = personMapper.toPerson(dto);
@@ -41,7 +41,7 @@ public class PersonService {
                 });
     }
 
-    public void update(long id, @Valid PersonRequestDto dto) {
+    public void update(long id, PersonRequestDto dto) {
         Person person = getById(id);
         personMapper.toPerson(dto, person);
         checkUpdateUniqueConstraint(person);
@@ -68,7 +68,7 @@ public class PersonService {
         personRepository.delete(getById(id));
     }
 
-    public PersonPagingAndSortingResponseDto getPagingAndSorting(@Valid PersonPagingAndSortingBeanParamDto dto) {
+    public PersonPagingAndSortingResponseDto getPagingAndSorting(PersonPagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = getFilterBy(dto);
 
         List<Person> data = personRepository.load(
@@ -82,7 +82,7 @@ public class PersonService {
         return new PersonPagingAndSortingResponseDto(personMapper.toDto(data), totalRecords);
     }
 
-    private Map<String, Object> getFilterBy(@Valid PersonPagingAndSortingBeanParamDto dto) {
+    private Map<String, Object> getFilterBy(PersonPagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = new HashMap<>();
         if (dto.getNameFilter() != null)
             filterBy.put("name", dto.getNameFilter());

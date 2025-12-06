@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.itmo.se.is.feature.fileimport.domain.value.ImportStatus;
+import ru.itmo.se.is.feature.fileimport.domain.value.ImportOperationStatus;
 import ru.itmo.se.is.platform.validation.annotation.AllowedValues;
 
 import java.io.Serializable;
@@ -40,5 +40,5 @@ public class ImportOperationPagingAndSortingBeanParamDto implements Serializable
     private String idFilter;
 
     @QueryParam("status")
-    private ImportStatus statusFilter;
+    private ImportOperationStatus statusFilter;
 }

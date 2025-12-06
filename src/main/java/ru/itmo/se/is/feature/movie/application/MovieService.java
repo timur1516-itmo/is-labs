@@ -3,8 +3,10 @@ package ru.itmo.se.is.feature.movie.application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import ru.itmo.se.is.feature.movie.api.dto.*;
+import ru.itmo.se.is.feature.movie.api.dto.MovieCountResponseDto;
+import ru.itmo.se.is.feature.movie.api.dto.MoviePagingAndSortingBeanParamDto;
+import ru.itmo.se.is.feature.movie.api.dto.MoviePagingAndSortingResponseDto;
+import ru.itmo.se.is.feature.movie.api.dto.MovieRequestDto;
 import ru.itmo.se.is.feature.movie.domain.Movie;
 import ru.itmo.se.is.feature.movie.domain.MovieRepository;
 import ru.itmo.se.is.feature.movie.domain.value.MpaaRating;
@@ -13,6 +15,7 @@ import ru.itmo.se.is.feature.person.api.dto.PersonResponseDto;
 import ru.itmo.se.is.feature.person.application.PersonService;
 import ru.itmo.se.is.feature.person.domain.Person;
 import ru.itmo.se.is.feature.person.infrastructure.mapper.PersonMapper;
+import ru.itmo.se.is.platform.db.exception.annotation.TranslatePersistenceExceptions;
 import ru.itmo.se.is.shared.exception.EntityAlreadyExistsException;
 import ru.itmo.se.is.shared.exception.EntityNotFoundException;
 
@@ -23,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Transactional
+@TranslatePersistenceExceptions
 @ApplicationScoped
 public class MovieService {
 
@@ -38,15 +42,15 @@ public class MovieService {
     @Inject
     private PersonService personService;
 
-    public MovieResponseDto create(@Valid MovieRequestDto dto) {
+    public Movie create(MovieRequestDto dto) {
         Movie movie = movieMapper.toMovie(dto);
         setEmbeddedFields(movie, dto);
         movie.setCreationDate(ZonedDateTime.now());
         checkCreateUniqueConstraint(movie);
-        return movieMapper.toDto(movieRepository.save(movie));
+        return movieRepository.save(movie);
     }
 
-    public void update(long id, @Valid MovieRequestDto dto) {
+    public void update(long id, MovieRequestDto dto) {
         Movie movie = getById(id);
         setEmbeddedFields(movie, dto);
         movieMapper.toMovie(dto, movie);
@@ -100,7 +104,7 @@ public class MovieService {
         movieRepository.delete(getById(id));
     }
 
-    public MoviePagingAndSortingResponseDto getPagingAndSorting(@Valid MoviePagingAndSortingBeanParamDto dto) {
+    public MoviePagingAndSortingResponseDto getPagingAndSorting(MoviePagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = getFilterBy(dto);
 
         List<Movie> data = movieRepository.load(
@@ -114,7 +118,7 @@ public class MovieService {
         return new MoviePagingAndSortingResponseDto(movieMapper.toDto(data), totalRecords);
     }
 
-    private Map<String, Object> getFilterBy(@Valid MoviePagingAndSortingBeanParamDto dto) {
+    private Map<String, Object> getFilterBy(MoviePagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = new HashMap<>();
         if (dto.getIdFilter() != null)
             filterBy.put("id", dto.getIdFilter());

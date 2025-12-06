@@ -1,6 +1,7 @@
 package ru.itmo.se.is.feature.person.api;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -29,13 +30,13 @@ public class PersonController {
     private PersonMapper personMapper;
 
     @GET
-    public Response getAllPeople(@BeanParam PersonPagingAndSortingBeanParamDto dto) {
+    public Response getAllPeople(@Valid @BeanParam PersonPagingAndSortingBeanParamDto dto) {
         return Response.ok(service.getPagingAndSorting(dto)).build();
     }
 
     @POST
-    public Response createPerson(@Context UriInfo uriInfo, PersonRequestDto dto) {
-        PersonResponseDto createdPerson = service.create(dto);
+    public Response createPerson(@Context UriInfo uriInfo, @Valid PersonRequestDto dto) {
+        PersonResponseDto createdPerson = personMapper.toDto(service.create(dto));
 
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path("{id}")
@@ -47,7 +48,7 @@ public class PersonController {
 
     @PATCH
     @Path("/{id}")
-    public Response updatePerson(@PathParam("id") long id, PersonRequestDto dto) {
+    public Response updatePerson(@PathParam("id") long id, @Valid PersonRequestDto dto) {
         service.update(id, dto);
         notificationService.notifyAll(NotificationMessageType.PERSON);
         return Response.noContent().build();

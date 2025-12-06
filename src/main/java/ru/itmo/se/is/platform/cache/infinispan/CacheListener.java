@@ -57,7 +57,7 @@ public class CacheListener {
         event.getEntries().forEach(
                 (key, value) -> builder.append(key).append(", "));
         System.out.println("Evicting following entries from cache: "
-                + builder.toString());
+                + builder);
     }
 
     private void printLog(String log, CacheEntryEvent<?, ?> event) {

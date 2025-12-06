@@ -1,6 +1,7 @@
 package ru.itmo.se.is.feature.movie.api;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -29,13 +30,13 @@ public class MovieController {
     private MovieMapper movieMapper;
 
     @GET
-    public Response getAllMovies(@BeanParam MoviePagingAndSortingBeanParamDto dto) {
+    public Response getAllMovies(@Valid @BeanParam MoviePagingAndSortingBeanParamDto dto) {
         return Response.ok(service.getPagingAndSorting(dto)).build();
     }
 
     @POST
-    public Response createMovie(@Context UriInfo uriInfo, MovieRequestDto dto) {
-        MovieResponseDto createdMovie = service.create(dto);
+    public Response createMovie(@Context UriInfo uriInfo, @Valid MovieRequestDto dto) {
+        MovieResponseDto createdMovie = movieMapper.toDto(service.create(dto));
 
         URI location = uriInfo.getAbsolutePathBuilder()
                 .path("{id}")
@@ -49,7 +50,7 @@ public class MovieController {
 
     @PATCH
     @Path("/{id}")
-    public Response updateMovie(@PathParam("id") long id, MovieRequestDto dto) {
+    public Response updateMovie(@PathParam("id") long id, @Valid MovieRequestDto dto) {
         service.update(id, dto);
         notificationService.notifyAll(NotificationMessageType.MOVIE);
         return Response.noContent().build();

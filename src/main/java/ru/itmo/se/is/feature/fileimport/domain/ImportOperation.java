@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import ru.itmo.se.is.feature.fileimport.domain.value.ImportStatus;
+import ru.itmo.se.is.feature.fileimport.domain.value.ImportOperationStatus;
 
 import java.time.ZonedDateTime;
 
@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 @Setter
 @NoArgsConstructor
 @Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "ImportOperation")
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "ImportOperation")
 @Entity
 @Table(name = "import_operation")
 public class ImportOperation {
@@ -23,12 +23,12 @@ public class ImportOperation {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ImportStatus status;
+    private ImportOperationStatus status;
 
     @Column(name = "start_dt", nullable = false)
     private ZonedDateTime startDt;
 
-    @Column(name = "end_dt", nullable = false)
+    @Column(name = "end_dt")
     private ZonedDateTime endDt;
 
     @Column(name = "imported_cnt")
@@ -37,12 +37,7 @@ public class ImportOperation {
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
-
-    @Column(name = "file_bucket", nullable = false)
-    private String fileBucket;
-
-    @Column(name = "file_object_key", nullable = false)
-    private String fileObjectKey;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "file_resource")
+    private FileResource fileResource;
 }

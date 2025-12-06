@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import ru.itmo.se.is.feature.fileimport.api.dto.FileUploadRequestDto;
+import ru.itmo.se.is.feature.fileimport.api.dto.FileRequestDto;
 import ru.itmo.se.is.feature.fileimport.application.ImportService;
 import ru.itmo.se.is.platform.web.util.MultipartImportFileUtil;
 
@@ -24,8 +24,8 @@ public class ImportController {
     private ImportService importService;
 
     @POST
-    public Response importMovies(@Multipart(value = "file") Attachment fileAttachment) {
-        FileUploadRequestDto requestDto = multipartImportFileUtil.from(fileAttachment);
+    public Response importMovies(@Multipart(value = "file") Attachment fileAttachment) throws Exception {
+        FileRequestDto requestDto = multipartImportFileUtil.from(fileAttachment);
         importService.importMovies(requestDto);
         return Response.noContent().build();
     }

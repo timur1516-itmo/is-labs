@@ -3,35 +3,49 @@ package ru.itmo.se.is.feature.fileimport.application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import ru.itmo.se.is.feature.fileimport.api.dto.FileResponseDto;
 import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationPagingAndSortingBeanParamDto;
 import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationPagingAndSortingResponseDto;
-import ru.itmo.se.is.feature.fileimport.api.dto.ImportOperationResponseDto;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperation;
 import ru.itmo.se.is.feature.fileimport.domain.ImportOperationRepository;
 import ru.itmo.se.is.feature.fileimport.infrastructure.mapper.ImportOperationMapper;
 import ru.itmo.se.is.shared.exception.EntityNotFoundException;
+import ru.itmo.se.is.shared.storage.FileStorage;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @ApplicationScoped
-@Transactional(Transactional.TxType.REQUIRES_NEW)
+@Transactional
 public class ImportOperationService {
 
     @Inject
     private ImportOperationRepository importOperationRepository;
     @Inject
     private ImportOperationMapper importOperationMapper;
+    @Inject
+    private FileStorage fileStorage;
 
-    public ImportOperationResponseDto saveImportOperation(ImportOperation importOperation) {
-        return importOperationMapper.toDto(
-                importOperationRepository.save(importOperation)
-        );
+    public ImportOperation saveImportOperation(ImportOperation importOperation) {
+        return importOperationRepository.save(importOperation);
     }
 
-    public ImportOperationPagingAndSortingResponseDto getPagingAndSorting(@Valid ImportOperationPagingAndSortingBeanParamDto dto) {
+    public FileResponseDto getFile(long id) throws Exception {
+        ImportOperation operation = getById(id);
+
+        if (operation.getFileResource() == null)
+            throw new EntityNotFoundException(String.format("File for operation with id %d not found", id));
+
+        byte[] content = fileStorage.get(
+                operation.getFileResource().getFileObjectKey()
+        );
+        String fileName = operation.getFileResource().getFileName();
+
+        return new FileResponseDto(content, fileName);
+    }
+
+    public ImportOperationPagingAndSortingResponseDto getPagingAndSorting(ImportOperationPagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = getFilterBy(dto);
         List<ImportOperation> data = importOperationRepository.load(
                 dto.getFirst(),
@@ -44,7 +58,7 @@ public class ImportOperationService {
         return new ImportOperationPagingAndSortingResponseDto(importOperationMapper.toDto(data), totalRecords);
     }
 
-    private Map<String, Object> getFilterBy(@Valid ImportOperationPagingAndSortingBeanParamDto dto) {
+    private Map<String, Object> getFilterBy(ImportOperationPagingAndSortingBeanParamDto dto) {
         Map<String, Object> filterBy = new HashMap<>();
         if (dto.getIdFilter() != null)
             filterBy.put("id", dto.getIdFilter());

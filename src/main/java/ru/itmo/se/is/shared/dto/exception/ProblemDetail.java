@@ -20,7 +20,7 @@ public class ProblemDetail implements Serializable {
 
     private String detail;
 
-    private String code;
+    private ErrorCode code;
 
     @Nullable
     private Map<String, Object> properties;

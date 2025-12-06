@@ -3,41 +3,41 @@ package ru.itmo.se.is.platform.web.util;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.validation.constraints.NotNull;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import ru.itmo.se.is.feature.fileimport.api.dto.FileUploadRequestDto;
-import ru.itmo.se.is.feature.fileimport.domain.value.ImportFileFormat;
-
-import java.io.InputStream;
+import ru.itmo.se.is.feature.fileimport.api.dto.FileRequestDto;
+import ru.itmo.se.is.feature.fileimport.domain.value.FileExtension;
+import ru.itmo.se.is.shared.exception.FileImportException;
 
 @ApplicationScoped
 public class MultipartImportFileUtil {
 
-    public FileUploadRequestDto from(Attachment attachment) {
+    public FileRequestDto from(Attachment attachment) {
         String fileName = getFileName(attachment);
-        ImportFileFormat format = getFormat(fileName);
-        InputStream fileStream = getInputStream(attachment);
+        FileExtension format = getFormat(fileName);
+        byte[] content = getContent(attachment);
 
-        FileUploadRequestDto dto = new FileUploadRequestDto();
+        FileRequestDto dto = new FileRequestDto();
         dto.setFileName(fileName);
-        dto.setFileStream(fileStream);
-        dto.setFormat(format);
+        dto.setContent(content);
+        dto.setFileExtension(format);
 
         return dto;
     }
 
-    private InputStream getInputStream(Attachment attachment) {
-        InputStream fileStream;
+    private byte[] getContent(Attachment attachment) {
         try {
-            fileStream = attachment.getDataHandler().getInputStream();
+            return attachment
+                    .getDataHandler()
+                    .getInputStream()
+                    .readAllBytes();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not extract file input stream", e);
+            throw new FileImportException("Could not extract file input stream", e);
         }
-        return fileStream;
     }
 
-    private ImportFileFormat getFormat(@NotNull String fileName) {
+    private FileExtension getFormat(@NotNull String fileName) {
         int lastDotIndex = fileName.lastIndexOf('.');
         if (lastDotIndex < 0 || lastDotIndex == fileName.length() - 1) {
-            throw new IllegalArgumentException(
+            throw new FileImportException(
                     String.format("File does not have extension: %s", fileName)
             );
         }
@@ -45,10 +45,11 @@ public class MultipartImportFileUtil {
         String ext = fileName.substring(lastDotIndex + 1).toUpperCase();
 
         try {
-            return ImportFileFormat.valueOf(ext);
+            return FileExtension.valueOf(ext);
         } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException(
-                    String.format("Unknown file format: %s (extension: %s)", fileName, ext)
+            throw new FileImportException(
+                    String.format("Unknown file format: %s (extension: %s)", fileName, ext),
+                    ex
             );
         }
     }
@@ -56,7 +57,7 @@ public class MultipartImportFileUtil {
     private String getFileName(Attachment attachment) {
         String fileName = attachment.getDataHandler().getName();
         if (fileName == null || fileName.trim().isEmpty()) {
-            throw new IllegalArgumentException("File name is not provided");
+            throw new FileImportException("File name is not provided");
         }
         return fileName.trim();
     }
