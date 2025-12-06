@@ -17,40 +17,6 @@ public class CacheCheckInterceptor {
     @Inject
     EntityManager em;
 
-    @AroundInvoke
-    public Object around(InvocationContext ctx) throws Exception {
-        CacheLogged ann = getAnn(ctx);
-        if (ann == null) {
-            return ctx.proceed();
-        }
-
-        Class<?> entityClass = ann.entity() == Object.class ?
-                resolveEntityClassFromTarget(ctx.getTarget()) :
-                ann.entity();
-
-        Object[] params = ctx.getParameters();
-        Object id = params == null ? null : params[0];
-
-        if (entityClass == null || id == null) {
-            CacheLog.usageSkip(entityClass, ctx, "no-id");
-            return ctx.proceed();
-        }
-
-        Session session = em.unwrap(Session.class);
-        SessionFactory sf = session.getSessionFactory();
-        org.hibernate.Cache cache = sf.getCache();
-
-        boolean inL2 = cache.containsEntity(entityClass, id);
-
-        if (inL2) {
-            CacheLog.usageHit(entityClass, id, ctx);
-        } else {
-            CacheLog.usageMiss(entityClass, id, ctx);
-        }
-
-        return ctx.proceed();
-    }
-
     private static CacheLogged getAnn(InvocationContext ctx) throws NoSuchMethodException {
         CacheLogged ann = ctx.getMethod().getAnnotation(CacheLogged.class);
         if (ann == null) {
@@ -88,5 +54,39 @@ public class CacheCheckInterceptor {
             cls = cls.getSuperclass();
         }
         return null;
+    }
+
+    @AroundInvoke
+    public Object around(InvocationContext ctx) throws Exception {
+        CacheLogged ann = getAnn(ctx);
+        if (ann == null) {
+            return ctx.proceed();
+        }
+
+        Class<?> entityClass = ann.entity() == Object.class ?
+                resolveEntityClassFromTarget(ctx.getTarget()) :
+                ann.entity();
+
+        Object[] params = ctx.getParameters();
+        Object id = params == null ? null : params[0];
+
+        if (entityClass == null || id == null) {
+            CacheLog.usageSkip(entityClass, ctx, "no-id");
+            return ctx.proceed();
+        }
+
+        Session session = em.unwrap(Session.class);
+        SessionFactory sf = session.getSessionFactory();
+        org.hibernate.Cache cache = sf.getCache();
+
+        boolean inL2 = cache.containsEntity(entityClass, id);
+
+        if (inL2) {
+            CacheLog.usageHit(entityClass, id, ctx);
+        } else {
+            CacheLog.usageMiss(entityClass, id, ctx);
+        }
+
+        return ctx.proceed();
     }
 }

@@ -26,5 +26,6 @@ export const COUNTRIES = [
 
 export const IMPORT_OPERATION_STATUSES = [
     {label: 'SUCCESS', value: 'SUCCESS'},
-    {label: 'FAILED', value: 'FAILED'}
+    {label: 'FAILED', value: 'FAILED'},
+    {label: 'FAILED_INTERNAL', value: 'FAILED_INTERNAL'},
 ]

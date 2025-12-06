@@ -1,11 +1,11 @@
-import React, {useEffect, useRef} from 'react'
-import {DataTable} from 'primereact/datatable'
-import {Column} from 'primereact/column'
+import React, {useEffect, useRef} from 'react';
+import {DataTable} from 'primereact/datatable';
+import {Column} from 'primereact/column';
 import {Dropdown} from "primereact/dropdown";
 import {IMPORT_OPERATION_STATUSES} from "../../domain/values.js";
 import {format, parseISO} from "date-fns";
 import {ru} from "date-fns/locale";
-import {WS_BASE_PATH} from "../../config.js";
+import {API_BASE_PATH, WS_BASE_PATH} from "../../config.js";
 
 const ImportOperationTable = ({
                                   importOperations,
@@ -116,6 +116,31 @@ const ImportOperationTable = ({
         return formatDate(rowData.endDt);
     };
 
+    const downloadBodyTemplate = (rowData) => {
+        const handleDownload = () => {
+            const link = document.createElement('a');
+            link.href = `${API_BASE_PATH}/imports/${rowData.id}/file`;
+            link.target = '_self'; // Загружаем файл на текущей странице
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        if (rowData.status === 'FAILED_INTERNAL') {
+            return null;
+        }
+
+        return (
+            <button
+                onClick={handleDownload}
+                className="p-button p-component p-button-text"
+                style={{border: 'none', background: 'none', cursor: 'pointer'}}
+            >
+                Скачать
+            </button>
+        );
+    };
+
     return (
         <div>
             <DataTable
@@ -181,6 +206,10 @@ const ImportOperationTable = ({
                     field="errorMessage"
                     header="Сообщение об ошибке"
                     sortable
+                />
+                <Column
+                    header="Файл"
+                    body={downloadBodyTemplate}
                 />
             </DataTable>
         </div>
