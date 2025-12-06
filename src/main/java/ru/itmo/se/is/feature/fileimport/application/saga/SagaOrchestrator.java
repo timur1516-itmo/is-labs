@@ -1,12 +1,14 @@
 package ru.itmo.se.is.feature.fileimport.application.saga;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import lombok.extern.slf4j.Slf4j;
 import ru.itmo.se.is.shared.exception.BusinessException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @ApplicationScoped
 public class SagaOrchestrator {
     public void executeSaga(List<SagaStep> steps, SagaContext context) throws Exception {
@@ -31,7 +33,7 @@ public class SagaOrchestrator {
                 try {
                     step.compensate(context);
                 } catch (Exception ex2) {
-                    System.out.println("Saga compensation error: " + ex2.getMessage());
+                    log.warn("Saga compensation error: {}", ex2.getMessage());
                 }
             });
             throw ex;

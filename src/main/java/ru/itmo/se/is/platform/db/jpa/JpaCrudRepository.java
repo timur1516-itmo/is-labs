@@ -6,6 +6,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import ru.itmo.se.is.platform.cache.infinispan.CacheLogged;
 import ru.itmo.se.is.shared.db.CrudRepository;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public abstract class JpaCrudRepository<T, ID> implements CrudRepository<T, ID> 
         return em.createQuery(cq).getResultList();
     }
 
+    @CacheLogged
     @Override
     public Optional<T> findById(ID id) {
         return Optional.ofNullable(
