@@ -68,14 +68,18 @@ public class MovieService {
                 personService.createOrGetExisting(dto.getDirectorReference().getValue()) :
                 personService.getById(dto.getDirectorReference().getId())
         );
-        movie.setOperator(dto.getOperatorReference().isNew() ?
-                personService.createOrGetExisting(dto.getOperatorReference().getValue()) :
-                personService.getById(dto.getOperatorReference().getId())
-        );
-        movie.setScreenwriter(dto.getScreenwriterReference().isNew() ?
-                personService.createOrGetExisting(dto.getScreenwriterReference().getValue()) :
-                personService.getById(dto.getScreenwriterReference().getId())
-        );
+        if (!dto.getOperatorReference().isEmpty()) {
+            movie.setOperator(dto.getOperatorReference().isNew() ?
+                    personService.createOrGetExisting(dto.getOperatorReference().getValue()) :
+                    personService.getById(dto.getOperatorReference().getId())
+            );
+        }
+        if (!dto.getDirectorReference().isEmpty()) {
+            movie.setScreenwriter(dto.getScreenwriterReference().isNew() ?
+                    personService.createOrGetExisting(dto.getScreenwriterReference().getValue()) :
+                    personService.getById(dto.getScreenwriterReference().getId())
+            );
+        }
     }
 
     private void checkCreateUniqueConstraint(Movie movie) {
