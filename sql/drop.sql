@@ -1,7 +1,0 @@
-DROP TABLE movie CASCADE;
-
-DROP TABLE person CASCADE;
-
-DROP TABLE import_operation CASCADE;
-
-DROP TABLE sequence CASCADE;
