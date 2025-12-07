@@ -12,7 +12,9 @@ import java.io.ByteArrayInputStream;
 
 @ApplicationScoped
 public class MinioFileStorage implements FileStorage {
-    String importsBucket = "imports";
+    @Inject
+    StorageConfig storageConfig;
+
     @Inject
     private MinioClient minioClient;
 
@@ -20,7 +22,7 @@ public class MinioFileStorage implements FileStorage {
     public void save(String objectKey, byte[] content) throws Exception {
         minioClient.putObject(
                 PutObjectArgs.builder()
-                        .bucket(importsBucket)
+                        .bucket(storageConfig.getImportsBucket())
                         .object(objectKey)
                         .stream(new ByteArrayInputStream(content), -1, 10 * 1024 * 1024)
                         .contentType("application/octet-stream")
@@ -32,7 +34,7 @@ public class MinioFileStorage implements FileStorage {
     public byte[] get(String objectKey) throws Exception {
         return minioClient.getObject(
                 GetObjectArgs.builder()
-                        .bucket(importsBucket)
+                        .bucket(storageConfig.getImportsBucket())
                         .object(objectKey)
                         .build()
         ).readAllBytes();
@@ -42,7 +44,7 @@ public class MinioFileStorage implements FileStorage {
     public void delete(String objectKey) throws Exception {
         minioClient.removeObject(
                 RemoveObjectArgs.builder()
-                        .bucket(importsBucket)
+                        .bucket(storageConfig.getImportsBucket())
                         .object(objectKey)
                         .build()
         );

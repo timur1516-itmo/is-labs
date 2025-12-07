@@ -26,6 +26,8 @@ dependencies {
     compileOnly("org.apache.cxf:cxf-rt-rs-extension-providers:4.0.10")
     implementation("org.hibernate.orm:hibernate-core:6.6.37.Final")
 
+    compileOnly("org.eclipse.microprofile.config:microprofile-config-api:3.0.3")
+
     implementation("io.minio:minio:8.5.17")
 
     implementation("ch.qos.logback:logback-classic:1.5.21")
